@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-cookies-consent/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/elegantengineeringtech/laravel-cookies-consent/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-cookies-consent.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-cookies-consent)
 
-![laravel-cookies-consent](https://github.com/ElegantEngineeringTech/laravel-cookies-consent/blob/main/docs/images/laravel-cookies-consent.webp)
+![laravel-cookies-consent](https://repository-images.githubusercontent.com/828522335/43bcddd8-c60c-44fc-bb09-cc1e7b648530)
 
 This package gives you a simple yet extremly flexible way to manage cookie consent in your Laravel app.
 
