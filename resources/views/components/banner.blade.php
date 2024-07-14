@@ -1,6 +1,6 @@
 @use(\Elegantly\CookiesConsent\Facades\CookiesConsent)
 
-<div wire:ignore class="max-h-screen-navbar fixed bottom-0 right-0 z-10 flex w-full max-w-full flex-col p-4 md:w-96"
+<div wire:ignore class="fixed bottom-0 right-0 z-50 flex max-h-screen w-full max-w-full flex-col p-4 md:w-96"
     x-data="{
         cookieName: @js(CookiesConsent::getCookieName()),
         lifetime: @js(config('cookies-consent.cookie.lifetime') / (24 * 60)),
@@ -41,12 +41,22 @@
         },
         getConsents() {
             const value = this.getValue();
-            const consents = value ? value['consents'] : {};
+            const defaultConsents = this.getDefaultConsents();
     
-            return {
-                ...this.getDefaultConsents(),
-                ...consents,
-            };
+            if (value) {
+                return {
+                    ...defaultConsents,
+                    ...value['consents'],
+                };
+            }
+    
+            // if no cookie have been set yet
+            // grant all consent by default
+            for (key in defaultConsents) {
+                defaultConsents[key] = true;
+            }
+    
+            return defaultConsents;
         },
         setCookie() {
             Cookies.set(
@@ -59,7 +69,6 @@
         },
         runCallbacks() {
             for (const [key, value] of Object.entries(this.consents)) {
-                console.log(`${key}: ${value}`);
                 if (value) {
                     this.callbacks[key]();
                 }
@@ -111,7 +120,8 @@
                     {{ __('cookies-consent::translations.accept_required') }}
                 </x-cookies-consent::button>
 
-                <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptAll">
+                <x-cookies-consent::button color="black" class="justify-center rounded-md font-semibold"
+                    x-on:click="acceptAll">
                     {{ __('cookies-consent::translations.accept_all') }}
                 </x-cookies-consent::button>
 
@@ -120,7 +130,7 @@
                     {{ __('cookies-consent::translations.customize') }}
                 </x-cookies-consent::button>
 
-                <x-cookies-consent::button x-show="expanded" x-cloak
+                <x-cookies-consent::button color="black" x-show="expanded" x-cloak
                     class="col-span-2 justify-center rounded-md font-semibold" x-on:click="save">
                     {{ __('cookies-consent::translations.save') }}
                 </x-cookies-consent::button>
@@ -135,21 +145,24 @@
                                 {{ $group->name }}
                             </p>
 
-                            <x-cookies-consent::toggle x-model="consents.{{ $group->key }}" :disabled="$group->required" />
+                            <label class="relative block" for="consents.{{ $group->key }}">
+                                <x-cookies-consent::toggle id="consents.{{ $group->key }}"
+                                    x-model="consents.{{ $group->key }}" :disabled="$group->required" />
+                            </label>
                         </div>
 
                         <p class="mb-1 text-gray-600">
                             {{ $group->description }}
                         </p>
 
-                        <x-cookies-consent::button x-on:click="expanded = !expanded">
+                        <button type="button" x-on:click="expanded = !expanded">
                             <span x-show="!expanded">
                                 {{ __('cookies-consent::translations.details.more') }}
                             </span>
                             <span x-show="expanded" x-cloak>
                                 {{ __('cookies-consent::translations.details.less') }}
                             </span>
-                        </x-cookies-consent::button>
+                        </button>
 
                         <div class="flex flex-col gap-1" x-show="expanded" x-collapse x-cloak>
                             @foreach ($group as $cookie)
@@ -167,7 +180,8 @@
                 @endforeach
             </div>
             <div class="border-t p-4">
-                <x-cookies-consent::button class="w-full justify-center rounded-md font-semibold" x-on:click="save">
+                <x-cookies-consent::button color="black" class="w-full justify-center rounded-md font-semibold"
+                    x-on:click="save">
                     {{ __('cookies-consent::translations.save') }}
                 </x-cookies-consent::button>
             </div>
