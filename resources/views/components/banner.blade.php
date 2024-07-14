@@ -107,23 +107,23 @@
                 {!! __('cookies-consent::translations.link', ['url' => route('privacy', ['locale' => 'fr'])]) !!}
             </p>
             <div class="grid grid-cols-2 gap-1">
-                <button type="button" class="justify-center rounded-md font-semibold" x-on:click="acceptEssentials">
+                <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptEssentials">
                     {{ __('cookies-consent::translations.accept_required') }}
-                </button>
+                </x-cookies-consent::button>
 
-                <button type="button" class="justify-center rounded-md font-semibold" x-on:click="acceptAll">
+                <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptAll">
                     {{ __('cookies-consent::translations.accept_all') }}
-                </button>
+                </x-cookies-consent::button>
 
-                <button type="button" x-show="!expanded" class="col-span-2 justify-center rounded-md font-semibold"
+                <x-cookies-consent::button x-show="!expanded" class="col-span-2 justify-center rounded-md font-semibold"
                     x-on:click="expanded = !expanded">
                     {{ __('cookies-consent::translations.customize') }}
-                </button>
+                </x-cookies-consent::button>
 
-                <button type="button" x-show="expanded" x-cloak
+                <x-cookies-consent::button x-show="expanded" x-cloak
                     class="col-span-2 justify-center rounded-md font-semibold" x-on:click="save">
                     {{ __('cookies-consent::translations.save') }}
-                </button>
+                </x-cookies-consent::button>
             </div>
         </div>
         <div x-show="expanded" x-collapse x-cloak>
@@ -134,22 +134,22 @@
                             <p class="grow font-semibold">
                                 {{ $group->name }}
                             </p>
-                            <input type="checkbox" x-model="consents.{{ $group->key }}"
-                                @disabled($group->required) />
+
+                            <x-cookies-consent::toggle x-model="consents.{{ $group->key }}" :disabled="$group->required" />
                         </div>
 
                         <p class="mb-1 text-gray-600">
                             {{ $group->description }}
                         </p>
 
-                        <button type="button" x-on:click="expanded = !expanded">
+                        <x-cookies-consent::button x-on:click="expanded = !expanded">
                             <span x-show="!expanded">
                                 {{ __('cookies-consent::translations.details.more') }}
                             </span>
                             <span x-show="expanded" x-cloak>
                                 {{ __('cookies-consent::translations.details.less') }}
                             </span>
-                        </button>
+                        </x-cookies-consent::button>
 
                         <div class="flex flex-col gap-1" x-show="expanded" x-collapse x-cloak>
                             @foreach ($group as $cookie)
@@ -167,9 +167,9 @@
                 @endforeach
             </div>
             <div class="border-t p-4">
-                <button type="button" class="w-full justify-center rounded-md font-semibold" x-on:click="save">
+                <x-cookies-consent::button class="w-full justify-center rounded-md font-semibold" x-on:click="save">
                     {{ __('cookies-consent::translations.save') }}
-                </button>
+                </x-cookies-consent::button>
             </div>
 
         </div>
