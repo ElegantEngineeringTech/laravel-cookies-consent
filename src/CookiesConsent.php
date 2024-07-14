@@ -31,6 +31,11 @@ class CookiesConsent
         return $this->definition;
     }
 
+    public function getCookieName(): string
+    {
+        return $this->cookieName;
+    }
+
     public function getCookie(): ?string
     {
         return Cookie::get($this->cookieName);

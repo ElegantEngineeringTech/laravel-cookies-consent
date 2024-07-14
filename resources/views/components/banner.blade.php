@@ -2,8 +2,8 @@
 
 <div wire:ignore class="max-h-screen-navbar fixed bottom-0 right-0 z-10 flex w-full max-w-full flex-col p-4 md:w-96"
     x-data="{
-        cookieName: @js(config('cookies-consent::translations.cookie.name')),
-        lifetime: @js(config('cookies-consent::translations.cookie.lifetime') / (24 * 60)),
+        cookieName: @js(CookiesConsent::getCookieName()),
+        lifetime: @js(config('cookies-consent.cookie.lifetime') / (24 * 60)),
         consents: null,
         expanded: false,
         show: false,

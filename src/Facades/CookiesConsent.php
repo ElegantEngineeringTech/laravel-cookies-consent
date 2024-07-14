@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static string getCookieName()
  * @method static Collection<string, CookieGroupDefinition> getDefinition()
  * @method static CookiesConsent register(CookieGroupDefinition $group)
  * @method static CookiesConsent registerEssentials()
