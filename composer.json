@@ -1,9 +1,10 @@
 {
-    "name": "elegantengineeringtech/laravel-cookies-consent",
-    "description": "This is my package laravel-cookies-consent",
+    "name": "elegantly/laravel-cookies-consent",
+    "description": "Cookie consent for Laravel",
     "keywords": [
         "Elegantly",
         "laravel",
+        "cookie-consent",
         "laravel-cookies-consent"
     ],
     "homepage": "https://github.com/elegantengineeringtech/laravel-cookies-consent",
