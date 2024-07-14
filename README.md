@@ -1,11 +1,13 @@
-# This is my package laravel-cookies-consent
+# Laravel cookies consent manager
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-cookies-consent.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-cookies-consent)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-cookies-consent/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/elegantengineeringtech/laravel-cookies-consent/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-cookies-consent/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/elegantengineeringtech/laravel-cookies-consent/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-cookies-consent.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-cookies-consent)
 
-Cookies consent manager for Laravel.
+![laravel-cookies-consent](https://github.com/ElegantEngineeringTech/laravel-cookies-consent/blob/main/docs/images/laravel-cookies-consent.webp)
+
+This package gives you a simple yet extremly flexible way to manage cookie consent in your Laravel app.
 
 The default cookie banner design require Tailwind & Alpine, but you can publish the component and customize it with your own stack.
 
@@ -179,7 +181,25 @@ new CookieGroupDefinition(
 )
 ```
 
-### Include the cookie banner to your page
+### Using the default Cookie banner
+
+#### js-cookie Requirement
+
+The default banner implementation require the `js-cookie` library to parse cookies in the browser.
+
+Add it to your project using the cdn:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3/dist/js.cookie.min.js"></script>
+```
+
+Or see [their documentation](https://github.com/js-cookie/js-cookie) to install it via npm.
+
+#### Alpine Requirement
+
+The default banner implementation require Alpine for reactivity. ensure it is included in your page.
+
+#### Default component
 
 Simply put the banner component `<x-cookies-consent::banner />` at the end of your html page and you are ready to go !
 
@@ -188,6 +208,18 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
     <x-cookies-consent::banner />
 </body>
 ```
+
+#### Custom component
+
+You can create your own component (or simply customize the default one).
+
+To do so, you must publish the views.
+
+```bash
+php artisan vendor:publish --tag="cookies-consent-views"
+```
+
+Then, feel free to customize the `vendor/views/components/banner.blade.php` file with your own stack.
 
 ## Testing
 
