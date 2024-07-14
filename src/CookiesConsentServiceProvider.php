@@ -17,6 +17,7 @@ class CookiesConsentServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-cookies-consent')
             ->hasConfigFile()
+            ->hasTranslations()
             ->hasViews();
     }
 
@@ -24,7 +25,7 @@ class CookiesConsentServiceProvider extends PackageServiceProvider
     {
         $this->app->scoped(CookiesConsent::class, function () {
             return new CookiesConsent(
-                cookieName: config('cookiesconsent.cookie.name')
+                cookieName: config('cookies-consent.cookie.name')
             );
         });
     }

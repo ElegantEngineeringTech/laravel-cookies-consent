@@ -65,7 +65,7 @@ class CookiesConsent
     {
         $group = $this->definition->get($key);
 
-        if (! $group) {
+        if (!$group) {
             return false;
         }
 
@@ -96,7 +96,7 @@ class CookiesConsent
                 items: [
                     new CookieDefinition(
                         name: $this->cookieName,
-                        lifetime: CarbonInterval::minutes(config('cookiesconsent.cookie.lifetime'))
+                        lifetime: CarbonInterval::minutes(config('cookies-consent.cookie.lifetime'))
                     ),
                     new CookieDefinition(
                         name: config('session.cookie'),
