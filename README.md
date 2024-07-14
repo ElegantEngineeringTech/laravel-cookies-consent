@@ -118,18 +118,18 @@ class RegisterCookiesConsent
         CookiesConsent::registerEssentials()
             ->register(new CookieGroupDefinition(
                 key: 'marketing',
-                name: __('cookiesconsent.marketing.name'),
-                description: __('cookiesconsent.marketing.description'),
+                name: __('cookies-consent::translations.marketing.name'),
+                description: __('cookies-consent::translations.marketing.description'),
                 items: [
                     new CookieDefinition(
                         name: '_fbc',
                         lifetime: CarbonInterval::years(2),
-                        description: __('cookiesconsent._fbc.description')
+                        description: __('cookies-consent::translations._fbc.description')
                     ),
                     new CookieDefinition(
                         name: '_fbp',
                         lifetime: CarbonInterval::years(3),
-                        description: __('cookiesconsent._fbp.description')
+                        description: __('cookies-consent::translations._fbp.description')
                     ),
                 ],
                 onAccepted: function () {
