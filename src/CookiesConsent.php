@@ -65,7 +65,7 @@ class CookiesConsent
     {
         $group = $this->definition->get($key);
 
-        if (!$group) {
+        if (! $group) {
             return false;
         }
 
