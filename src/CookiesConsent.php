@@ -43,7 +43,7 @@ class CookiesConsent
             ->toArray();
     }
 
-    public function getConsents(): ?array
+    public function getConsents(): array
     {
         $value = $this->getValue() ?? [];
 
