@@ -179,7 +179,15 @@ new CookieGroupDefinition(
 )
 ```
 
-### Include
+### Include the cookie banner to your page
+
+Simply put the banner component `<x-cookies-consent::banner />` at the end of your html page and you are ready to go !
+
+```php
+    //...
+    <x-cookies-consent::banner />
+</body>
+```
 
 ## Testing
 
