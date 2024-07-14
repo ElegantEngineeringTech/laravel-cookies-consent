@@ -23,6 +23,14 @@ class CookiesConsent
         $this->definition = new Collection;
     }
 
+    /**
+     * @return Collection<string, CookieGroupDefinition>
+     */
+    public function getDefinition(): Collection
+    {
+        return $this->definition;
+    }
+
     public function getCookie(): ?string
     {
         return Cookie::get($this->cookieName);

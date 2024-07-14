@@ -2,9 +2,12 @@
 
 namespace Elegantly\CookiesConsent\Facades;
 
+use Elegantly\CookiesConsent\CookieGroupDefinition;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static Collection<string, CookieGroupDefinition> getDefinition()
  * @method static CookiesConsent register(CookieGroupDefinition $group)
  * @method static CookiesConsent registerEssentials()
  * @method static string|null getCookie()
