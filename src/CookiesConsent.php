@@ -12,7 +12,7 @@ class CookiesConsent
     /**
      * @var Collection<string, CookieGroupDefinition>
      */
-    public Collection $definition;
+    public Collection $definition = new Collection;
 
     /**
      * @param  string  $cookieName  The name of the cookie containing the consent state
