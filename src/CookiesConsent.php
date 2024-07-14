@@ -12,7 +12,7 @@ class CookiesConsent
     /**
      * @var Collection<string, CookieGroupDefinition>
      */
-    public Collection $definition = new Collection;
+    public Collection $definition;
 
     /**
      * @param  string  $cookieName  The name of the cookie containing the consent state
@@ -20,7 +20,7 @@ class CookiesConsent
     public function __construct(
         public string $cookieName,
     ) {
-        //
+        $this->definition = new Collection;
     }
 
     public function getCookie(): ?string
