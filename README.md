@@ -1,4 +1,4 @@
-# Laravel cookies consent manager
+# Laravel Cookies Consent Manager
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-cookies-consent.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-cookies-consent)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-cookies-consent/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/elegantengineeringtech/laravel-cookies-consent/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -7,28 +7,28 @@
 
 ![laravel-cookies-consent](https://repository-images.githubusercontent.com/828522335/9fa1ca96-5277-4d84-ac2d-85d0fee19c50)
 
-This package gives you a simple yet extremly flexible way to manage cookie consent in your Laravel app.
+This package provides a simple yet extremely flexible way to manage cookie consent in your Laravel application.
 
-The default cookie banner design require Tailwind & Alpine, but you can publish the component and customize it with your own stack.
+The default cookie banner design requires Tailwind CSS and Alpine.js, but you can publish the component and customize it with your own stack.
 
 ## Requirements
 
-### Backend:
+### Backend
 
 -   Laravel
 
-### Frontend:
+### Frontend
 
-The default cookie consent banner included in this package require:
+The default cookie consent banner included in this package requires:
 
--   Blade component
+-   Blade components
 -   [Alpine.js](https://alpinejs.dev/)
--   [tailwindcss](https://tailwindcss.com/)
+-   [Tailwind CSS](https://tailwindcss.com/)
 -   [js-cookie](https://github.com/js-cookie/js-cookie)
 
 ## Installation
 
-You can install the package via composer:
+You can install the package via Composer:
 
 ```bash
 composer require elegantly/laravel-cookies-consent
@@ -40,14 +40,14 @@ You can publish the config file with:
 php artisan vendor:publish --tag="cookies-consent-config"
 ```
 
-This is the contents of the published config file:
+This is the content of the published config file:
 
 ```php
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | URL configuration
+    | URL Configuration
     |--------------------------------------------------------------------------
     |
     | These values determine the package's API route URLs. Both values are
@@ -62,17 +62,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Consent cookie configuration
+    | Consent Cookie Configuration
     |--------------------------------------------------------------------------
     |
-    | In order to keep track of the user's preferences, this package stores
+    | To keep track of the user's preferences, this package stores
     | an anonymized cookie. You do not need to register this cookie in the
     | package's cookie manager as it is done automatically (under "essentials").
     |
     | The duration parameter represents the cookie's lifetime in minutes.
     |
     | The domain parameter, when defined, determines the cookie's activity domain.
-    | For multiple sub-domains, prefix your domain with "." (eg: ".mydomain.com").
+    | For multiple sub-domains, prefix your domain with "." (e.g., ".mydomain.com").
     |
     */
 
@@ -84,11 +84,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Legal page configuration
+    | Legal Page Configuration
     |--------------------------------------------------------------------------
     |
     | Most cookie notices display a link to a dedicated page explaining
-    | the extended cookies usage policy. If your application has such a page
+    | the extended cookies usage policy. If your application has such a page,
     | you can add its route name here.
     |
     */
@@ -100,32 +100,31 @@ return [
 
 ## Usage
 
-This package cover both backend and frontend cookie consent management.
+This package covers both backend and frontend cookie consent management.
 
-You can chose to use the package only for the backend capabilities or for both.
+You can choose to use the package only for backend capabilities or for both.
 
 ### Backend
 
-In the backend you will register the cookies and a callback associated with each of them.
-This callback will be a javascript script to run when the consent is granted.
+In the backend, you will register the cookies and a callback associated with each of them.
+This callback will be a JavaScript script to run when the consent is granted.
 
-#### Register your cookies
+#### Register Your Cookies
 
-First you should register all the cookies requiring the consent of the user.
+First, you should register all the cookies requiring user consent.
 
 To manage cookies, the package provides a service accessible via the Facade: `Elegantly\CookiesConsent\Facades\CookiesConsent`.
 
-Cookies registration should be done in a middleware.
-Doing it in a middleware will give you access to the app and request context. It will also let you chose the routes relying on those cookies.
+Cookie registration should be done in middleware to access the app and request context. This also allows you to choose the routes relying on those cookies.
 
 To register your cookies, create a new middleware `App\Http\Middleware\RegisterCookiesConsent`.
-In this middleware call `CookiesConsent::register` to register groups of cookies.
+In this middleware, call `CookiesConsent::register` to register groups of cookies.
 
--   Cookies are always registered in groupes.
--   A cookie is always defined by its `name`, its `lifetime` and an optional `description`.
--   A cookie group can be defined as `required`. That cookies cannot be rejected by the user. It is usefull for cookies required to make the app work, like the session cookie for example.
+-   Cookies are always registered in groups.
+-   A cookie is defined by its `name`, `lifetime`, and an optional `description`.
+-   A cookie group can be defined as `required`. Such cookies cannot be rejected by the user, which is useful for essential cookies like the session cookie.
 
-For example, all cookies related to "Marketing" can be registered together like that:
+For example, all cookies related to "Marketing" can be registered together:
 
 ```php
 namespace App\Http\Middleware;
@@ -142,50 +141,50 @@ class RegisterCookiesConsent
 {
     public function handle(Request $request, Closure $next): Response
     {
-        // Let's register cookies related to the Facebook pixel
+        // Register cookies related to the Facebook pixel
         CookiesConsent::register(new CookieGroupDefinition(
-                key: 'marketing',
-                name: __('cookies-consent::translations.marketing.name'),
-                description: __('cookies-consent::translations.marketing.description'),
-                items: [
-                    new CookieDefinition(
-                        name: '_fbc',
-                        lifetime: CarbonInterval::years(2),
-                        description: __('cookies-consent::translations._fbc.description')
-                    ),
-                    new CookieDefinition(
-                        name: '_fbp',
-                        lifetime: CarbonInterval::years(3),
-                        description: __('cookies-consent::translations._fbp.description')
-                    ),
-                ],
-                onAccepted: function () {
-                    return <<<'JS'
-                            if(typeof fbq === 'function'){
-                                fbq('consent', 'grant');
-                            }
-                        JS;
-                },
-            ));
+            key: 'marketing',
+            name: __('cookies-consent::translations.marketing.name'),
+            description: __('cookies-consent::translations.marketing.description'),
+            items: [
+                new CookieDefinition(
+                    name: '_fbc',
+                    lifetime: CarbonInterval::years(2),
+                    description: __('cookies-consent::translations._fbc.description')
+                ),
+                new CookieDefinition(
+                    name: '_fbp',
+                    lifetime: CarbonInterval::years(3),
+                    description: __('cookies-consent::translations._fbp.description')
+                ),
+            ],
+            onAccepted: function () {
+                return <<<'JS'
+                    if (typeof fbq === 'function') {
+                        fbq('consent', 'grant');
+                    }
+                JS;
+            },
+        ));
 
         return $next($request);
     }
 }
 ```
 
-#### Registering essentials cookies
+#### Registering Essential Cookies
 
-The package provides a preset for essantials cookies. Essantials cookies are cookies that can't be removed without compromising the application.
-By default, Laravel includes 2 essantials cookies:
+The package provides a preset for essential cookies. Essential cookies are those that cannot be removed without compromising the application.
+By default, Laravel includes 2 essential cookies:
 
--   XSRF-TOKEN
--   session cookie
+-   `XSRF-TOKEN`
+-   Session cookie
 
 This package adds a third one:
 
--   consents (a cookie to store consents).
+-   Consents (a cookie to store consents).
 
-You can automatically register these three essantials cookies using:
+You can automatically register these three essential cookies using:
 
 ```php
 use Elegantly\CookiesConsent\Facades\CookiesConsent;
@@ -196,11 +195,11 @@ CookiesConsent::registerEssentials()
     )
 ```
 
-#### Registering cookies callback
+#### Registering Cookie Callbacks
 
-Using `onAccepted` param, you can freely define the javascript code to execute when the consent is granted to a specific cookie group.
+Using the `onAccepted` parameter, you can define the JavaScript code to execute when consent is granted to a specific cookie group.
 
-In the previous example, we are granting consent using the facebook pixel.
+In the previous example, we grant consent using the Facebook pixel.
 
 ```php
 use Elegantly\CookiesConsent\Facades\CookiesConsent;
@@ -209,27 +208,26 @@ CookiesConsent::register(new CookieGroupDefinition(
     // ...
     onAccepted: function () {
         return <<<'JS'
-                // This javascript code will be executed when the consent is granted
-                // do whatever you want here
-                if(typeof fbq === 'function'){
-                    fbq('consent', 'grant');
-                }
-            JS;
+            // This JavaScript code will be executed when consent is granted
+            if (typeof fbq === 'function') {
+                fbq('consent', 'grant');
+            }
+        JS;
     },
 ));
 ```
 
 ### Frontend
 
-#### Using the default Cookie banner
+#### Using the Default Cookie Banner
 
 You can use the default cookie banner included with this package.
 
 ##### js-cookie Requirement
 
-The default banner implementation require the [js-cookie](https://github.com/js-cookie/js-cookie) library to parse cookies in the browser.
+The default banner implementation requires the [js-cookie](https://github.com/js-cookie/js-cookie) library to parse cookies in the browser.
 
-Add it to your project using the cdn:
+Add it to your project using the CDN:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3/dist/js.cookie.min.js"></script>
@@ -237,31 +235,31 @@ Add it to your project using the cdn:
 
 Or see [their documentation](https://github.com/js-cookie/js-cookie) to install it via npm.
 
-##### Alpine Requirement
+##### Alpine.js Requirement
 
-The default banner implementation require Alpine for reactivity. ensure it is included in your page.
+The default banner implementation requires Alpine.js for reactivity. Ensure it is included in your page.
 
-Simply put the banner component `<x-cookies-consent::banner />` at the end of your html page and you are ready to go !
+Simply put the banner component `<x-cookies-consent::banner />` at the end of your HTML page, and you are ready to go!
 
 ```php
-    //...
+    <!-- ... -->
     <x-cookies-consent::banner />
 </body>
 ```
 
-#### Customize the default component
+#### Customizing the Default Component
 
-You can customer the default component by publishing the views:
+You can customize the default component by publishing the views:
 
 ```bash
 php artisan vendor:publish --tag="cookies-consent-views"
 ```
 
-#### Using a custom component
+#### Using a Custom Component
 
-You could totally design your own frontend cookie banner.
+You can design your own frontend cookie banner.
 
-To retreive all the cookies definitions simply call:
+To retrieve all the cookie definitions, simply call:
 
 ```php
 use Elegantly\CookiesConsent\Facades\CookiesConsent;
