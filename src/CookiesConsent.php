@@ -62,7 +62,7 @@ class CookiesConsent
 
         return array_merge(
             $this->getDefaultConsents(),
-            Arr::get($value, 'consents')
+            Arr::get($value, 'consents') ?? []
         );
     }
 
