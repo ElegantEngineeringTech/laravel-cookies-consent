@@ -267,23 +267,23 @@ use Elegantly\CookiesConsent\Facades\CookiesConsent;
 CookiesConsent::getDefinition();
 ```
 
-## Facebook Pixel cookie consent
+## Facebook Pixel Cookie Consent
 
 ### About
 
-The Facebook Pixel track users and conversions on the client side. [Documentation available here](https://developers.facebook.com/docs/meta-pixel).
+The Facebook Pixel tracks users and conversions on the client side. [Documentation available here](https://developers.facebook.com/docs/meta-pixel).
 
-This is the historic way to track conversions, Facebook & Meta now also provides a way to track your conversions directly from your backend. It is called "API conversions" and [the documentation is avaible here](https://developers.facebook.com/docs/marketing-api/conversions-api/).
+This is the historic way to track conversions. Facebook & Meta now also provide a way to track your conversions directly from your backend. It is called "API conversions" and [the documentation is available here](https://developers.facebook.com/docs/marketing-api/conversions-api/).
 
-This example will only cover the The Facebook Pixel as the "API conversions" do not need cookie consent.
+This example will only cover the Facebook Pixel as the "API conversions" do not need cookie consent.
 
 ### Example
 
-The Pixel provide a built-in manager for consent. This example rely on this.
+The Pixel provides a built-in manager for consent. This example relies on this.
 
 ### 1. Revoke consent on load
 
-Before calling `fbq('init', ...)` and immediatly after the Pixel script, **revoke** the consent:
+Before calling `fbq('init', ...)` and immediately after the Pixel script, **revoke** the consent:
 
 ```html
 <!-- Facebook Pixel Code -->
@@ -320,9 +320,9 @@ use Elegantly\CookiesConsent\CookieDefinition;
 use Carbon\CarbonInterval;
 
 CookiesConsent::register(new CookieGroupDefinition(
-    key: 'marketing', // custoomize this value if you want
-    name: __('cookies-consent::translations.marketing.name'), // custoomize this value if you want
-    description: __('cookies-consent::translations.marketing.description'), // custoomize this value if you want
+    key: 'marketing', // customize this value if you want
+    name: __('cookies-consent::translations.marketing.name'), // customize this value if you want
+    description: __('cookies-consent::translations.marketing.description'), // customize this value if you want
     items: [
         new CookieDefinition(
             name: '_fbc',
