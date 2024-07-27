@@ -267,6 +267,88 @@ use Elegantly\CookiesConsent\Facades\CookiesConsent;
 CookiesConsent::getDefinition();
 ```
 
+## Facebook Pixel cookie consent
+
+### About
+
+The Facebook Pixel track users and conversions on the client side. [Documentation available here](https://developers.facebook.com/docs/meta-pixel).
+
+This is the historic way to track conversions, Facebook & Meta now also provides a way to track your conversions directly from your backend. It is called "API conversions" and [the documentation is avaible here](https://developers.facebook.com/docs/marketing-api/conversions-api/).
+
+This example will only cover the The Facebook Pixel as the "API conversions" do not need cookie consent.
+
+### Example
+
+The Pixel provide a built-in manager for consent. This example rely on this.
+
+### 1. Revoke consent on load
+
+Before calling `fbq('init', ...)` and immediatly after the Pixel script, **revoke** the consent:
+
+```html
+<!-- Facebook Pixel Code -->
+<!-- prettier-ignore -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+
+  // Revoke consent before init
+  fbq("consent", "revoke"); 
+  
+  // Then call your logic as usual
+  fbq('init', '{your-pixel-id-goes-here}');
+  fbq('track', 'PageView');
+</script>
+<!-- End Facebook Pixel Code -->
+```
+
+### 2. Grant consent
+
+In your middleware, register a cookie group and call `fbq('consent', 'grant')` in the `onAccepted` callback.
+Every call to `fbq` done before the consent will be triggered after `fbq('consent', 'grant')` is called.
+
+```php
+use Elegantly\CookiesConsent\Facades\CookiesConsent;
+use Elegantly\CookiesConsent\CookieGroupDefinition;
+use Elegantly\CookiesConsent\CookieDefinition;
+use Carbon\CarbonInterval;
+
+CookiesConsent::register(new CookieGroupDefinition(
+    key: 'marketing', // custoomize this value if you want
+    name: __('cookies-consent::translations.marketing.name'), // custoomize this value if you want
+    description: __('cookies-consent::translations.marketing.description'), // custoomize this value if you want
+    items: [
+        new CookieDefinition(
+            name: '_fbc',
+            lifetime: CarbonInterval::years(2),
+            description: __('cookies-consent::translations._fbc.description')
+        ),
+        new CookieDefinition(
+            name: '_fbp',
+            lifetime: CarbonInterval::years(3),
+            description: __('cookies-consent::translations._fbp.description')
+        ),
+    ],
+    onAccepted: function () {
+        return <<<'JS'
+                if(typeof fbq === 'function'){
+                    fbq('consent', 'grant');
+                }
+            JS;
+    },
+));
+```
+
+### References
+
+[Facebook Guide: General Data Protection Regulation](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr)
+
 ## Testing
 
 ```bash
