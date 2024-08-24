@@ -144,18 +144,18 @@ class RegisterCookiesConsent
         // Register cookies related to the Facebook pixel
         CookiesConsent::register(new CookieGroupDefinition(
             key: 'marketing',
-            name: __('cookies-consent::translations.marketing.name'),
-            description: __('cookies-consent::translations.marketing.description'),
+            name: __('cookies-consent::cookies.marketing.name'),
+            description: __('cookies-consent::cookies.marketing.description'),
             items: [
                 new CookieDefinition(
                     name: '_fbc',
                     lifetime: CarbonInterval::years(2),
-                    description: __('cookies-consent::translations._fbc.description')
+                    description: __('cookies-consent::cookies._fbc.description')
                 ),
                 new CookieDefinition(
                     name: '_fbp',
                     lifetime: CarbonInterval::years(3),
-                    description: __('cookies-consent::translations._fbp.description')
+                    description: __('cookies-consent::cookies._fbp.description')
                 ),
             ],
             onAccepted: function () {
@@ -321,18 +321,18 @@ use Carbon\CarbonInterval;
 
 CookiesConsent::register(new CookieGroupDefinition(
     key: 'marketing', // customize this value if you want
-    name: __('cookies-consent::translations.marketing.name'), // customize this value if you want
-    description: __('cookies-consent::translations.marketing.description'), // customize this value if you want
+    name: __('cookies-consent::cookies.marketing.name'), // customize this value if you want
+    description: __('cookies-consent::cookies.marketing.description'), // customize this value if you want
     items: [
         new CookieDefinition(
             name: '_fbc',
             lifetime: CarbonInterval::years(2),
-            description: __('cookies-consent::translations._fbc.description')
+            description: __('cookies-consent::cookies._fbc.description')
         ),
         new CookieDefinition(
             name: '_fbp',
             lifetime: CarbonInterval::years(3),
-            description: __('cookies-consent::translations._fbp.description')
+            description: __('cookies-consent::cookies._fbp.description')
         ),
     ],
     onAccepted: function () {

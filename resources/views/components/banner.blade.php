@@ -109,30 +109,30 @@
     <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md">
         <div class="p-4">
             <h2 class="mb-1 text-lg font-bold">
-                {{ __('cookies-consent::translations.title') }}
+                {{ __('cookies-consent::cookies.title') }}
             </h2>
             <p class="mb-3 text-sm">
-                {{ __('cookies-consent::translations.intro') }} <br>
-                {!! __('cookies-consent::translations.link', ['url' => route('privacy', ['locale' => 'fr'])]) !!}
+                {{ __('cookies-consent::cookies.intro') }} <br>
+                {!! __('cookies-consent::cookies.link', ['url' => route('privacy', ['locale' => 'fr'])]) !!}
             </p>
             <div class="grid grid-cols-2 gap-1">
                 <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptEssentials">
-                    {{ __('cookies-consent::translations.accept_required') }}
+                    {{ __('cookies-consent::cookies.accept_required') }}
                 </x-cookies-consent::button>
 
                 <x-cookies-consent::button color="black" class="justify-center rounded-md font-semibold"
                     x-on:click="acceptAll">
-                    {{ __('cookies-consent::translations.accept_all') }}
+                    {{ __('cookies-consent::cookies.accept_all') }}
                 </x-cookies-consent::button>
 
                 <x-cookies-consent::button x-show="!expanded" class="col-span-2 justify-center rounded-md font-semibold"
                     x-on:click="expanded = !expanded">
-                    {{ __('cookies-consent::translations.customize') }}
+                    {{ __('cookies-consent::cookies.customize') }}
                 </x-cookies-consent::button>
 
                 <x-cookies-consent::button color="black" x-show="expanded" x-cloak
                     class="col-span-2 justify-center rounded-md font-semibold" x-on:click="save">
-                    {{ __('cookies-consent::translations.save') }}
+                    {{ __('cookies-consent::cookies.save') }}
                 </x-cookies-consent::button>
             </div>
         </div>
@@ -157,10 +157,10 @@
 
                         <button type="button" x-on:click="expanded = !expanded">
                             <span x-show="!expanded">
-                                {{ __('cookies-consent::translations.details.more') }}
+                                {{ __('cookies-consent::cookies.details.more') }}
                             </span>
                             <span x-show="expanded" x-cloak>
-                                {{ __('cookies-consent::translations.details.less') }}
+                                {{ __('cookies-consent::cookies.details.less') }}
                             </span>
                         </button>
 
@@ -182,7 +182,7 @@
             <div class="border-t p-4">
                 <x-cookies-consent::button color="black" class="w-full justify-center rounded-md font-semibold"
                     x-on:click="save">
-                    {{ __('cookies-consent::translations.save') }}
+                    {{ __('cookies-consent::cookies.save') }}
                 </x-cookies-consent::button>
             </div>
 

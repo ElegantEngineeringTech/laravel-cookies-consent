@@ -95,8 +95,8 @@ class CookiesConsent
         return $this->register(
             new CookieGroupDefinition(
                 key: 'essentials',
-                name: __('cookies-consent::translations.essentials.name'),
-                description: __('cookies-consent::translations.essentials.description'),
+                name: __('cookies-consent::cookies.essentials.name'),
+                description: __('cookies-consent::cookies.essentials.description'),
                 required: true,
                 items: [
                     new CookieDefinition(
