@@ -369,7 +369,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
--   [Quentin Gabriele](https://github.com/40128136+QuentinGab)
+-   [Quentin Gabriele](https://github.com/QuentinGab)
 -   [All Contributors](../../contributors)
 
 ## License
