@@ -104,12 +104,12 @@ This package covers both backend and frontend cookie consent management.
 
 You can choose to use the package only for backend capabilities or for both.
 
-### Backend
+## Backend Usage
 
 In the backend, you will register the cookies and a callback associated with each of them.
 This callback will be a JavaScript script to run when the consent is granted.
 
-#### Register Your Cookies
+### Register Your Cookies
 
 First, you should register all the cookies requiring user consent.
 
@@ -172,7 +172,7 @@ class RegisterCookiesConsent
 }
 ```
 
-#### Registering Essential Cookies
+### Registering Essential Cookies
 
 The package provides a preset for essential cookies. Essential cookies are those that cannot be removed without compromising the application.
 By default, Laravel includes 2 essential cookies:
@@ -195,7 +195,7 @@ CookiesConsent::registerEssentials()
     )
 ```
 
-#### Registering Cookie Callbacks
+### Registering Cookie Callbacks
 
 Using the `onAccepted` parameter, you can define the JavaScript code to execute when consent is granted to a specific cookie group.
 
@@ -217,13 +217,13 @@ CookiesConsent::register(new CookieGroupDefinition(
 ));
 ```
 
-### Frontend
+## Frontend Usage
 
-#### Using the Default Cookie Banner
+### Using the Default Cookie Banner
 
 You can use the default cookie banner included with this package. It requires js-cookie, Alpine and tailwindcss.
 
-##### js-cookie Requirement
+#### js-cookie Requirement
 
 The default banner implementation requires the [js-cookie](https://github.com/js-cookie/js-cookie) library to parse cookies in the browser.
 
@@ -235,7 +235,7 @@ Add it to your project using the CDN:
 
 Or see [their documentation](https://github.com/js-cookie/js-cookie) to install it via npm.
 
-##### Alpine.js Requirement
+#### Alpine.js Requirement
 
 The default banner implementation requires Alpine.js for reactivity. Ensure it is included in your page.
 
@@ -247,7 +247,7 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
 </body>
 ```
 
-##### tailwindcss Requirement
+#### tailwindcss Requirement
 
 The default banner is styled with tailwindcss. You should add the following paths to your tailwind config file:
 
@@ -261,7 +261,7 @@ export default {
 };
 ```
 
-#### Customizing the Default Component
+### Customizing the Default Component
 
 You can customize the default component by publishing the views:
 
@@ -269,7 +269,7 @@ You can customize the default component by publishing the views:
 php artisan vendor:publish --tag="cookies-consent-views"
 ```
 
-#### Using a Custom Component
+### Using a Custom Component
 
 You can design your own frontend cookie banner.
 
@@ -283,8 +283,6 @@ CookiesConsent::getDefinition();
 
 ## Facebook Pixel Cookie Consent
 
-### About
-
 The Facebook Pixel tracks users and conversions on the client side. [Documentation available here](https://developers.facebook.com/docs/meta-pixel).
 
 This is the historic way to track conversions. Facebook & Meta now also provide a way to track your conversions directly from your backend. It is called "API conversions" and [the documentation is available here](https://developers.facebook.com/docs/marketing-api/conversions-api/).
@@ -295,7 +293,7 @@ This example will only cover the Facebook Pixel as the "API conversions" do not 
 
 The Pixel provides a built-in manager for consent. This example relies on this.
 
-### 1. Revoke consent on load
+#### 1. Revoke consent on load
 
 Before calling `fbq('init', ...)` and immediately after the Pixel script, **revoke** the consent:
 
@@ -322,7 +320,7 @@ Before calling `fbq('init', ...)` and immediately after the Pixel script, **revo
 <!-- End Facebook Pixel Code -->
 ```
 
-### 2. Grant consent
+#### 2. Grant consent
 
 In your middleware, register a cookie group and call `fbq('consent', 'grant')` in the `onAccepted` callback.
 Every call to `fbq` done before the consent will be triggered after `fbq('consent', 'grant')` is called.
@@ -359,7 +357,7 @@ CookiesConsent::register(new CookieGroupDefinition(
 ));
 ```
 
-### References
+## References
 
 [Facebook Guide: General Data Protection Regulation](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr)
 
