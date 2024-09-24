@@ -113,7 +113,9 @@
             </h2>
             <p class="mb-3 text-sm">
                 {{ __('cookies-consent::cookies.intro') }} <br>
-                {!! __('cookies-consent::cookies.link', ['url' => route('privacy', ['locale' => 'fr'])]) !!}
+                @if ($policy = config('cookies-consent.policy'))
+                    {!! __('cookies-consent::cookies.link', ['url' => $policy]) !!}
+                @endif
             </p>
             <div class="grid grid-cols-2 gap-1">
                 <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptEssentials">
