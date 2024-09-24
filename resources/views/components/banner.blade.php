@@ -1,6 +1,7 @@
 @use(\Elegantly\CookiesConsent\Facades\CookiesConsent)
 
-<div wire:ignore class="fixed bottom-0 right-0 z-50 flex max-h-screen w-full max-w-full flex-col p-4 md:w-96"
+<div wire:ignore
+    {{ $attributes->class(['fixed bottom-0 right-0 z-50 flex max-h-screen w-full max-w-full flex-col p-4 md:w-96']) }}
     x-data="{
         cookieName: @js(CookiesConsent::getCookieName()),
         lifetime: @js(config('cookies-consent.cookie.lifetime') / (24 * 60)),
