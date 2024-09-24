@@ -255,7 +255,7 @@ The default banner is styled with tailwindcss. You should add the following path
 export default {
     content: [
         // ...
-        "./vendor/elegantly/laravel-cookies-consent/resources/views/*.blade.php",
+        "./vendor/elegantly/laravel-cookies-consent/resources/views/**/*.blade.php",
     ],
     // ...
 };
