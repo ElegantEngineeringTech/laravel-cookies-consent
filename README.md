@@ -221,7 +221,7 @@ CookiesConsent::register(new CookieGroupDefinition(
 
 #### Using the Default Cookie Banner
 
-You can use the default cookie banner included with this package.
+You can use the default cookie banner included with this package. It requires js-cookie, Alpine and tailwindcss.
 
 ##### js-cookie Requirement
 
@@ -245,6 +245,20 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
     <!-- ... -->
     <x-cookies-consent::banner />
 </body>
+```
+
+##### tailwindcss Requirement
+
+The default banner is styled with tailwindcss. You should add the following paths to your tailwind config file:
+
+```js
+export default {
+    content: [
+        // ...
+        "./vendor/elegantly/laravel-cookies-consent/resources/views/*.blade.php",
+    ],
+    // ...
+};
 ```
 
 #### Customizing the Default Component
