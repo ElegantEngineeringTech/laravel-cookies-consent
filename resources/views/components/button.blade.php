@@ -6,9 +6,13 @@
 ])
 
 <{!! $tag !!} {!! $attributes->class([
-    'bg-white ring-1 ring-inset ring-black/10 text-black hover:text-black hover:bg-white/95 outline-white' =>
-        $color === 'white',
-    'bg-black text-white hover:text-white hover:bg-black outline-black ring-black/20' => $color === 'black',
+    match ($color) {
+        'white'
+            => 'dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700 dark:hover:text-white bg-white ring-1 ring-inset ring-black/10 text-black hover:text-black hover:bg-white/95 outline-white',
+        'black'
+            => 'dark:bg-white dark:text-black dark:hover:bg-white dark:hover:text-black bg-black text-white hover:text-white hover:bg-black outline-black ring-black/20',
+        default => '',
+    },
     'text-sm',
     'px-3 py-2',
     'shrink-0 cursor-pointer relative inline-flex items-center',

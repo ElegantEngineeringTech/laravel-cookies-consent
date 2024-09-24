@@ -1,10 +1,18 @@
 @use(\Elegantly\CookiesConsent\Facades\CookiesConsent)
 
+@props([
+    'policy' => config('cookies-consent.policy'),
+    'name' => CookiesConsent::getCookieName(),
+    'lifetime' => config('cookies-consent.cookie.lifetime') / (24 * 60),
+    'defaults' => CookiesConsent::getDefaultConsents(),
+    'cookies' => CookiesConsent::getDefinition(),
+])
+
 <div wire:ignore
     {{ $attributes->class(['fixed bottom-0 right-0 z-50 flex max-h-screen w-full max-w-full flex-col p-4 md:w-96']) }}
     x-data="{
-        cookieName: @js(CookiesConsent::getCookieName()),
-        lifetime: @js(config('cookies-consent.cookie.lifetime') / (24 * 60)),
+        cookieName: @js($name),
+        lifetime: @js($lifetime),
         consents: null,
         expanded: false,
         show: false,
@@ -38,7 +46,7 @@
             return cookie ? JSON.parse(cookie) : null;
         },
         getDefaultConsents() {
-            return @js(CookiesConsent::getDefaultConsents());
+            return @js($defaults);
         },
         getConsents() {
             const value = this.getValue();
@@ -99,7 +107,7 @@
         },
         <!-- prettier-ignore-start -->
         callbacks: {
-            @foreach(CookiesConsent::getDefinition() as $group)
+            @foreach($cookies as $group)
             '{{ $group->key }}': function() {
                 {!! value($group->onAccepted) !!}
             },
@@ -107,14 +115,15 @@
         },
         <!-- prettier-ignore-end -->
     }" x-show="show" x-cloak x-on:cookies-consent.window="show = true">
-    <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md">
+    <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md dark:bg-zinc-900 dark:text-white">
         <div class="p-4">
             <h2 class="mb-1 text-lg font-bold">
                 {{ __('cookies-consent::cookies.title') }}
             </h2>
-            <p class="mb-3 text-sm">
-                {{ __('cookies-consent::cookies.intro') }} <br>
-                @if ($policy = config('cookies-consent.policy'))
+            <p class="mb-3 text-sm dark:text-white/50">
+                {{ __('cookies-consent::cookies.intro') }}
+                @if ($policy)
+                    <br>
                     {!! __('cookies-consent::cookies.link', ['url' => $policy]) !!}
                 @endif
             </p>
@@ -140,8 +149,8 @@
             </div>
         </div>
         <div x-show="expanded" x-collapse x-cloak>
-            <div class="divide-y border-t text-sm">
-                @foreach (CookiesConsent::getDefinition() as $group)
+            <div class="divide-y border-t text-sm dark:divide-white/20 dark:border-white/20">
+                @foreach ($cookies as $group)
                     <div class="p-4" x-data="{ expanded: false }">
                         <div class="mb-0.5 flex items-center text-base">
                             <p class="grow font-semibold">
@@ -154,7 +163,7 @@
                             </label>
                         </div>
 
-                        <p class="mb-1 text-gray-600">
+                        <p class="mb-1 text-black/50 dark:text-white/50">
                             {{ $group->description }}
                         </p>
 
@@ -175,14 +184,14 @@
                                         <p>{{ $cookie->formattedLifetime() }}</p>
                                     </div>
 
-                                    <p class="text-xs text-gray-500">{{ $cookie->description }}</p>
+                                    <p class="text-xs text-black/50 dark:text-white/50">{{ $cookie->description }}</p>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 @endforeach
             </div>
-            <div class="border-t p-4">
+            <div class="border-t p-4 dark:border-white/20">
                 <x-cookies-consent::button color="black" class="w-full justify-center rounded-md font-semibold"
                     x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}

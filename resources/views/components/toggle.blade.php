@@ -26,6 +26,6 @@
     'checked:after:duration-300 checked:after:translate-x-4',
     'disabled:after:bg-opacity-75 disabled:cursor-not-allowed',
     'disabled:checked:before:bg-opacity-40',
-    'before:checked:bg-emerald-500 dark:before:checked:bg-emerald-500',
+    'before:checked:bg-emerald-500 dark:before:checked:bg-emerald-700',
 ]) !!} type="checkbox" @disabled($disabled) @checked($checked)
     @required($required)>
