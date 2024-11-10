@@ -128,24 +128,24 @@
                 @endif
             </p>
             <div class="grid grid-cols-2 gap-1">
-                <x-cookies-consent::button class="justify-center rounded-md font-semibold" x-on:click="acceptEssentials">
+                <x-kit::button color="white" class="justify-center rounded-md font-semibold"
+                    x-on:click="acceptEssentials">
                     {{ __('cookies-consent::cookies.accept_required') }}
-                </x-cookies-consent::button>
+                </x-kit::button>
 
-                <x-cookies-consent::button color="black" class="justify-center rounded-md font-semibold"
-                    x-on:click="acceptAll">
+                <x-kit::button color="black" class="justify-center rounded-md font-semibold" x-on:click="acceptAll">
                     {{ __('cookies-consent::cookies.accept_all') }}
-                </x-cookies-consent::button>
+                </x-kit::button>
 
-                <x-cookies-consent::button x-show="!expanded" class="col-span-2 justify-center rounded-md font-semibold"
-                    x-on:click="expanded = !expanded">
+                <x-kit::button color="white" x-show="!expanded"
+                    class="col-span-2 justify-center rounded-md font-semibold" x-on:click="expanded = !expanded">
                     {{ __('cookies-consent::cookies.customize') }}
-                </x-cookies-consent::button>
+                </x-kit::button>
 
-                <x-cookies-consent::button color="black" x-show="expanded" x-cloak
+                <x-kit::button color="black" x-show="expanded" x-cloak
                     class="col-span-2 justify-center rounded-md font-semibold" x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}
-                </x-cookies-consent::button>
+                </x-kit::button>
             </div>
         </div>
         <div x-show="expanded" x-collapse x-cloak>
@@ -157,10 +157,8 @@
                                 {{ $group->name }}
                             </p>
 
-                            <label class="relative block" for="consents.{{ $group->key }}">
-                                <x-cookies-consent::toggle id="consents.{{ $group->key }}"
-                                    x-model="consents.{{ $group->key }}" :disabled="$group->required" />
-                            </label>
+                            <x-kit::switch id="consents.{{ $group->key }}" x-model="consents.{{ $group->key }}"
+                                :disabled="$group->required" />
                         </div>
 
                         <p class="mb-1 text-black/50 dark:text-white/50">
@@ -192,10 +190,9 @@
                 @endforeach
             </div>
             <div class="border-t p-4 dark:border-white/20">
-                <x-cookies-consent::button color="black" class="w-full justify-center rounded-md font-semibold"
-                    x-on:click="save">
+                <x-kit::button color="black" class="w-full justify-center rounded-md font-semibold" x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}
-                </x-cookies-consent::button>
+                </x-kit::button>
             </div>
 
         </div>
