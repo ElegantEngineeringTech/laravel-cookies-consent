@@ -249,7 +249,7 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
 </body>
 ```
 
-#### tailwindcss Requirement
+#### Tailwindcss Requirement
 
 The default banner is based on `elegantly/blade-kit` which is styled with tailwindcss.
 You must then add the following paths to your tailwind config file:
@@ -258,6 +258,7 @@ You must then add the following paths to your tailwind config file:
 export default {
     content: [
         // ...
+        "./vendor/elegantly/laravel-cookies-consent/resources/views/**/*.blade.php",
         "./vendor/elegantly/blade-kit/resources/views/**/*.blade.php",
         "./vendor/elegantly/blade-kit/src/Ui/**/*.php",
     ],
