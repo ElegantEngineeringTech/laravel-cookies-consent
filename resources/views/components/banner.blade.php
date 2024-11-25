@@ -105,15 +105,10 @@
             this.runCallbacks();
             this.show = false;
         },
-        <!-- prettier-ignore-start -->
         callbacks: {
-            @foreach($cookies as $group)
-            '{{ $group->key }}': function() {
-                {!! value($group->onAccepted) !!}
-            },
-            @endforeach
+            {{-- Do not use @foreach of @if or it will break when used with Livewire --}}
+            {!! $cookies->map(fn($group) => "'{$group->key}': function(){\n" . value($group->onAccepted) . "\n}")->join(",\n") !!}
         },
-        <!-- prettier-ignore-end -->
     }" x-show="show" x-cloak x-on:cookies-consent.window="show = true">
     <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md dark:bg-zinc-900 dark:text-white">
         <div class="p-4">
