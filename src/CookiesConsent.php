@@ -101,15 +101,15 @@ class CookiesConsent
                 items: [
                     new CookieDefinition(
                         name: $this->cookieName,
-                        lifetime: CarbonInterval::minutes(config('cookies-consent.cookie.lifetime'))
+                        lifetime: CarbonInterval::minutes((int) config('cookies-consent.cookie.lifetime'))
                     ),
                     new CookieDefinition(
                         name: config('session.cookie'),
-                        lifetime: CarbonInterval::minutes(config('session.lifetime'))
+                        lifetime: CarbonInterval::minutes((int) config('session.lifetime'))
                     ),
                     new CookieDefinition(
                         name: 'XSRF-TOKEN',
-                        lifetime: CarbonInterval::minutes(config('session.lifetime'))
+                        lifetime: CarbonInterval::minutes((int) config('session.lifetime'))
                     ),
                 ]
             )
