@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\CookiesConsent\Tests;
 
 use Elegantly\CookiesConsent\CookiesConsentServiceProvider;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     '_fbc' => [
         'description' => 'Used by Meta to identify the advertisement through which the user arrived on the site.',
