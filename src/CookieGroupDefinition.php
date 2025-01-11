@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
 class CookieGroupDefinition extends Collection
 {
     public function __construct(
-        public string|int $key,
+        public string $key,
         public string $name,
         public ?string $description = null,
         public bool $required = false,

@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Facade;
  * @method static CookiesConsent register(CookieGroupDefinition $group)
  * @method static CookiesConsent registerEssentials()
  * @method static string|null getCookie()
- * @method static array|null getValue()
- * @method static array getDefaultConsents()
- * @method static array getConsents()
+ * @method static null|array{ set_at: int, consents: array<string, bool> } getValue()
+ * @method static array<string, bool> getDefaultConsents()
+ * @method static array<string, bool> getConsents()
  * @method static bool hasConsent(string $key)
  *
  * @see \Elegantly\CookiesConsent\CookiesConsent

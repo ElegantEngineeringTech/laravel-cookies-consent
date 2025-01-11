@@ -40,32 +40,53 @@ class CookiesConsent
 
     public function getCookie(): ?string
     {
-        return Cookie::get($this->cookieName);
+        $value = Cookie::get($this->cookieName);
+
+        return is_array($value) ? null : $value;
     }
 
+    /**
+     * @return null|array{ set_at: int, consents: array<string, bool> }
+     */
     public function getValue(): ?array
     {
         $cookie = $this->getCookie();
 
-        return $cookie ? json_decode($cookie, true) : null;
+        if (! $cookie) {
+            return null;
+        }
+
+        /** @var null|array{ set_at: int, consents: array<string, bool> } $value */
+        $value = json_decode($cookie, true);
+
+        return $value;
     }
 
+    /**
+     * @return array<string, bool>
+     */
     public function getDefaultConsents(): array
     {
         return $this
             ->definition
             ->map(fn (CookieGroupDefinition $group) => $group->required)
-            ->toArray();
+            ->all();
     }
 
+    /**
+     * @return array<string, bool>
+     */
     public function getConsents(): array
     {
-        $value = $this->getValue() ?? [];
 
-        return array_merge(
-            $this->getDefaultConsents(),
-            Arr::get($value, 'consents') ?? []
-        );
+        if ($value = $this->getValue()) {
+            return array_merge(
+                $this->getDefaultConsents(),
+                $value['consents']
+            );
+        }
+
+        return [];
     }
 
     public function hasConsent(string $key): bool
@@ -103,15 +124,15 @@ class CookiesConsent
                 items: [
                     new CookieDefinition(
                         name: $this->cookieName,
-                        lifetime: CarbonInterval::minutes((int) config('cookies-consent.cookie.lifetime'))
+                        lifetime: CarbonInterval::minutes(config()->integer('cookies-consent.cookie.lifetime', 0))
                     ),
                     new CookieDefinition(
-                        name: config('session.cookie'),
-                        lifetime: CarbonInterval::minutes((int) config('session.lifetime'))
+                        name: config()->string('session.cookie'),
+                        lifetime: CarbonInterval::minutes(config()->integer('session.lifetime', 0))
                     ),
                     new CookieDefinition(
                         name: 'XSRF-TOKEN',
-                        lifetime: CarbonInterval::minutes((int) config('session.lifetime'))
+                        lifetime: CarbonInterval::minutes(config()->integer('session.lifetime', 0))
                     ),
                 ]
             )
