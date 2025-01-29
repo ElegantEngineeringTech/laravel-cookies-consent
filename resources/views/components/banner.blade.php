@@ -78,7 +78,7 @@
         },
         runCallbacks() {
             for (const [key, value] of Object.entries(this.consents)) {
-                if (value) {
+                if (value && Object.hasOwn(this.callbacks, key)) {
                     this.callbacks[key]();
                 }
             }
