@@ -128,11 +128,13 @@ class CookiesConsent
                     ),
                     new CookieDefinition(
                         name: config()->string('session.cookie'),
-                        lifetime: CarbonInterval::minutes(config()->integer('session.lifetime', 0))
+                        // @phpstan-ignore-next-line
+                        lifetime: CarbonInterval::minutes((int) config('session.lifetime', 0))
                     ),
                     new CookieDefinition(
                         name: 'XSRF-TOKEN',
-                        lifetime: CarbonInterval::minutes(config()->integer('session.lifetime', 0))
+                        // @phpstan-ignore-next-line
+                        lifetime: CarbonInterval::minutes((int) config('session.lifetime', 0))
                     ),
                 ]
             )
