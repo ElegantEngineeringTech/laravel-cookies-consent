@@ -123,22 +123,24 @@
                 @endif
             </p>
             <div class="grid grid-cols-2 gap-1">
-                <x-kit::button color="white" class="justify-center rounded-md font-semibold"
+                <x-kit::button color="white" class="justify-center rounded-md font-semibold ring-1 ring-inset"
                     x-on:click="acceptEssentials">
                     {{ __('cookies-consent::cookies.accept_required') }}
                 </x-kit::button>
 
-                <x-kit::button color="black" class="justify-center rounded-md font-semibold" x-on:click="acceptAll">
+                <x-kit::button color="black" class="justify-center rounded-md font-semibold ring-1 ring-inset"
+                    x-on:click="acceptAll">
                     {{ __('cookies-consent::cookies.accept_all') }}
                 </x-kit::button>
 
                 <x-kit::button color="white" x-show="!expanded"
-                    class="col-span-2 justify-center rounded-md font-semibold" x-on:click="expanded = !expanded">
+                    class="col-span-2 justify-center rounded-md font-semibold ring-1 ring-inset"
+                    x-on:click="expanded = !expanded">
                     {{ __('cookies-consent::cookies.customize') }}
                 </x-kit::button>
 
                 <x-kit::button color="black" x-show="expanded" x-cloak
-                    class="col-span-2 justify-center rounded-md font-semibold" x-on:click="save">
+                    class="col-span-2 justify-center rounded-md font-semibold ring-1 ring-inset" x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}
                 </x-kit::button>
             </div>
@@ -185,7 +187,8 @@
                 @endforeach
             </div>
             <div class="border-t p-4 dark:border-white/20">
-                <x-kit::button color="black" class="w-full justify-center rounded-md font-semibold" x-on:click="save">
+                <x-kit::button color="black" class="w-full justify-center rounded-md font-semibold ring-1 ring-inset"
+                    x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}
                 </x-kit::button>
             </div>
