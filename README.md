@@ -11,7 +11,7 @@ This package provides a simple yet extremely flexible way to manage cookie conse
 
 The default cookie banner design requires Tailwind CSS and Alpine.js, but you can publish the component and customize it with your own stack.
 
-[Demo here](https://elegantengineering.tech/laravel-cookies-consent)
+[Demo here](https://elegantly.dev/laravel-cookies-consent)
 
 ## Requirements
 
