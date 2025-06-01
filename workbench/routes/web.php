@@ -61,28 +61,28 @@ Route::get('/', function () {
             },
         ))
         ->register(new CookieGroupDefinition(
-                key: 'marketing',
-                name: __('cookies-consent::cookies.marketing.name'),
-                description: __('cookies-consent::cookies.marketing.description'),
-                items: [
-                    new CookieDefinition(
-                        name: '_fbc',
-                        lifetime: CarbonInterval::years(2),
-                        description: __('cookies-consent::cookies._fbc.description')
-                    ),
-                    new CookieDefinition(
-                        name: '_fbp',
-                        lifetime: CarbonInterval::years(3),
-                        description: __('cookies-consent::cookies._fbp.description')
-                    ),
-                    new CookieDefinition(
-                        name: '_ttp',
-                        lifetime: CarbonInterval::months(13),
-                        description: __('cookies._ttp.description')
-                    ),
-                ],
-                onAccepted: function () {
-                    return <<<'JS'
+            key: 'marketing',
+            name: __('cookies-consent::cookies.marketing.name'),
+            description: __('cookies-consent::cookies.marketing.description'),
+            items: [
+                new CookieDefinition(
+                    name: '_fbc',
+                    lifetime: CarbonInterval::years(2),
+                    description: __('cookies-consent::cookies._fbc.description')
+                ),
+                new CookieDefinition(
+                    name: '_fbp',
+                    lifetime: CarbonInterval::years(3),
+                    description: __('cookies-consent::cookies._fbp.description')
+                ),
+                new CookieDefinition(
+                    name: '_ttp',
+                    lifetime: CarbonInterval::months(13),
+                    description: __('cookies._ttp.description')
+                ),
+            ],
+            onAccepted: function () {
+                return <<<'JS'
                             if(typeof ttq === 'object'){
                                 ttq.grantConsent();
                             }
@@ -97,8 +97,8 @@ Route::get('/', function () {
                                 });
                             }
                         JS;
-                },
-            ));
+            },
+        ));
 
     return view('demo');
 });
