@@ -1,68 +1,54 @@
 @use(\Elegantly\CookiesConsent\Facades\CookiesConsent)
 
 @props([
-    'policy' => config('cookies-consent.policy'),
-    'name' => CookiesConsent::getCookieName(),
-    'lifetime' => config('cookies-consent.cookie.lifetime') / (24 * 60),
-    'defaults' => CookiesConsent::getDefaultConsents(),
     'cookies' => CookiesConsent::getDefinition(),
+    'defaultConsents' => CookiesConsent::getDefaultConsents(),
+    'policy' => config('cookies-consent.policy'),
+    'cookieName' => CookiesConsent::getCookieName(),
+    'cookieLifetime' => config('cookies-consent.cookie.lifetime') / (24 * 60),
 ])
 
 <div wire:ignore
     {{ $attributes->class(['fixed bottom-0 right-0 z-50 flex max-h-screen w-full max-w-full flex-col p-4 md:w-96']) }}
     x-data="{
-        cookieName: @js($name),
-        lifetime: @js($lifetime),
-        consents: null,
         expanded: false,
         show: false,
+        cookieName: @js($cookieName),
+        cookieLifetime: @js($cookieLifetime),
+        consents: null,
         init() {
             this.consents = this.getConsents();
             this.show = this.shouldShow();
     
-            if (!this.show) {
+            if (this.show === false) {
                 this.runCallbacks();
             }
-        },
-        shouldShow() {
-            const cookie = this.getValue();
-    
-            if (!cookie) {
-                return true;
-            }
-    
-            const defaultKeys = Object.keys(this.getDefaultConsents());
-            const currentKeys = Object.keys(cookie['consents']);
-    
-            const diffKeys = defaultKeys.filter(x => !currentKeys.includes(x));
-    
-            return diffKeys.length > 0;
         },
         getCookie() {
             return Cookies.get(this.cookieName);
         },
         getValue() {
             const cookie = this.getCookie();
-            return cookie ? JSON.parse(cookie) : null;
+            if (cookie) {
+                return JSON.parse(cookie);
+            }
+            return null;
         },
         getDefaultConsents() {
-            return @js($defaults);
+            return @js($defaultConsents);
         },
         getConsents() {
             const value = this.getValue();
             const defaultConsents = this.getDefaultConsents();
     
             if (value) {
-                return {
-                    ...defaultConsents,
-                    ...value['consents'],
-                };
-            }
+                const consents = {};
     
-            // if no cookie have been set yet
-            // grant all consent by default
-            for (key in defaultConsents) {
-                defaultConsents[key] = true;
+                for (const [key, defaultValue] of Object.entries(defaultConsents)) {
+                    consents[key] = defaultValue ? true : (value['consents'][key] ?? false);
+                }
+    
+                return consents;
             }
     
             return defaultConsents;
@@ -73,7 +59,7 @@
                 JSON.stringify({
                     set_at: Date.now(),
                     consents: this.consents,
-                }), { expires: this.lifetime }
+                }), { expires: this.cookieLifetime }
             );
         },
         runCallbacks() {
@@ -82,6 +68,24 @@
                     this.callbacks[key]();
                 }
             }
+        },
+        shouldShow() {
+            const cookie = this.getValue();
+    
+            if (!cookie) {
+                return true;
+            }
+    
+            const defaultKeys = Object.keys(this.getDefaultConsents());
+            const consents = cookie['consents'] ?? {};
+    
+            for (const key of defaultKeys) {
+                if (!Object.hasOwn(consents, key)) {
+                    return true;
+                }
+            }
+    
+            return false;
         },
         acceptAll() {
             for (key in this.consents) {
@@ -92,12 +96,6 @@
         acceptEssentials() {
             this.consents = this.getDefaultConsents();
     
-            this.save();
-        },
-        decline() {
-            for (key in this.consents) {
-                this.consents[key] = false;
-            }
             this.save();
         },
         save() {
@@ -146,7 +144,8 @@
             </div>
         </div>
         <div x-show="expanded" x-collapse x-cloak>
-            <div class="divide-y border-t text-sm dark:divide-white/20 dark:border-white/20">
+            <div
+                class="divide-y divide-gray-200 border-t border-gray-200 text-sm dark:divide-white/20 dark:border-white/20">
                 @foreach ($cookies as $group)
                     <div class="p-4" x-data="{ expanded: false }">
                         <div class="mb-0.5 flex items-center text-base">
@@ -173,7 +172,7 @@
 
                         <div class="flex flex-col gap-1" x-show="expanded" x-collapse x-cloak>
                             @foreach ($group as $cookie)
-                                <div class="">
+                                <div>
                                     <div class="flex gap-1">
                                         <p class="grow truncate">{{ $cookie->name }}</p>
                                         <p>{{ $cookie->formattedLifetime() }}</p>
@@ -186,7 +185,7 @@
                     </div>
                 @endforeach
             </div>
-            <div class="border-t p-4 dark:border-white/20">
+            <div class="border-t border-gray-200 p-4 dark:border-white/20">
                 <x-kit::button color="black" class="w-full justify-center rounded-md font-semibold ring-1 ring-inset"
                     x-on:click="save">
                     {{ __('cookies-consent::cookies.save') }}
