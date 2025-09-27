@@ -252,18 +252,12 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
 #### Tailwindcss Requirement
 
 The default banner is based on `elegantly/blade-kit` which is styled with tailwindcss.
-You must then add the following paths to your tailwind config file:
+You must then add the following paths to your tailwind `app.css`.
 
-```js
-export default {
-    content: [
-        // ...
-        "./vendor/elegantly/laravel-cookies-consent/resources/views/**/*.blade.php",
-        "./vendor/elegantly/blade-kit/resources/views/**/*.blade.php",
-        "./vendor/elegantly/blade-kit/src/Ui/**/*.php",
-    ],
-    // ...
-};
+```css
+@import "../../vendor/elegantly/blade-kit/resources/css/styles.css";
+@source "../../vendor/elegantly/blade-kit/resources/views/**/*.blade.php";
+@source "../../vendor/elegantly/laravel-cookies-consent/resources/views/**/*.blade.php;
 ```
 
 ### Customizing the Default Component
