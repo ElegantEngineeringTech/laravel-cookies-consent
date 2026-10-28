@@ -26,7 +26,6 @@ The default cookie consent banner included in this package requires:
 -   Blade components
 -   [Alpine.js](https://alpinejs.dev/)
 -   [Tailwind CSS](https://tailwindcss.com/)
--   [Vite](https://vite.dev/), only if you bundle the JavaScript class yourself
 
 ## Installation
 
@@ -239,11 +238,9 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
 
 #### JavaScript Requirement
 
-The banner relies on the `CookiesConsent` JavaScript class included in this package. It reads and writes the consent cookie and runs your `onAccepted` callbacks. It must be defined on `window` before Alpine.js starts, which you can do in one of two ways.
+The banner relies on the `CookiesConsent` JavaScript class included in this package. It reads and writes the consent cookie and runs your `onAccepted` callbacks.
 
-##### Using the Blade directive
-
-Add `@cookiesConsentScripts` to your `<head>`. It inlines the compiled script (about 1 kB gzipped), so there is nothing to build or publish:
+Add `@cookiesConsentScripts` to your `<head>`:
 
 ```php
 <head>
@@ -252,22 +249,9 @@ Add `@cookiesConsentScripts` to your `<head>`. It inlines the compiled script (a
 </head>
 ```
 
+It inlines the compiled class (about 1 kB gzipped) and creates `window.cookiesConsent`, an instance configured with your registered cookie groups and the `cookie` config. There is nothing to build or publish. Register your groups before the `<head>` renders, for example in a middleware as shown above.
+
 If your application uses a Content Security Policy, the directive reuses the nonce set with `Vite::useCspNonce()`. You can also pass one yourself: `@cookiesConsentScripts(nonce: $nonce)`.
-
-##### Using your Vite bundle
-
-Alternatively, import the class in your own Vite bundle and expose it on `window`:
-
-```js
-// resources/js/app.js
-import { CookiesConsent } from "../../vendor/elegantly/laravel-cookies-consent/resources/ts";
-
-window.CookiesConsent = CookiesConsent;
-```
-
-If you import Alpine.js in your bundle, assign the class before calling `Alpine.start()`. If you load Alpine.js from a CDN, put your `@vite` directive before Alpine's `<script>` tag.
-
-The class is written in TypeScript, which Vite compiles out of the box. TypeScript users also get `window.CookiesConsent` typed by this import.
 
 #### Tailwindcss Requirement
 
@@ -302,18 +286,10 @@ use Elegantly\CookiesConsent\Facades\CookiesConsent;
 CookiesConsent::getDefinition();
 ```
 
-The `CookiesConsent` JavaScript class is not tied to the default banner, so it can power your own component:
+Your component can rely on the `window.cookiesConsent` instance created by `@cookiesConsentScripts`, just like the default banner:
 
 ```js
-const consent = new CookiesConsent({
-    cookieName: "laravel_cookiesconsent", // config('cookies-consent.cookie.name')
-    lifetime: 60 * 24 * 365, // in minutes, config('cookies-consent.cookie.lifetime')
-    domain: null, // config('cookies-consent.cookie.domain')
-    defaultConsents: { essentials: true, analytics: false }, // CookiesConsent::getDefaultConsents()
-    callbacks: {
-        analytics: () => gtag("consent", "update", { analytics_storage: "granted" }),
-    },
-});
+const consent = window.cookiesConsent;
 
 if (consent.isPending()) {
     // Display your banner, then call consent.acceptAll(), consent.acceptEssentials()
@@ -322,6 +298,8 @@ if (consent.isPending()) {
     consent.runCallbacks();
 }
 ```
+
+The TypeScript source of the class lives in `vendor/elegantly/laravel-cookies-consent/resources/ts`, if you want to import it or its types.
 
 ## Facebook Pixel Cookie Consent
 
@@ -399,9 +377,112 @@ CookiesConsent::register(new CookieGroupDefinition(
 ));
 ```
 
+## Google Tag (gtag.js) Consent Mode
+
+The Google tag powers Google Analytics and Google Ads. Its [consent mode](https://developers.google.com/tag-platform/security/guides/consent) lets you deny storage by default and grant it once the user accepts.
+
+### Example
+
+This example maps the `analytics` group to `analytics_storage`, and the `marketing` group to `ad_storage`, `ad_user_data` and `ad_personalization`.
+
+#### 1. Initialize consent from the stored choice
+
+In your `<head>`, before the Google tag, set the default consent from the choice stored in the consent cookie. Groups the user hasn't accepted, including on their first visit, default to `denied`:
+
+```blade
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    {
+        const analytics = window.cookiesConsent.hasConsent('analytics') ? 'granted' : 'denied';
+        const marketing = window.cookiesConsent.hasConsent('marketing') ? 'granted' : 'denied';
+
+        gtag('consent', 'default', {
+            'ad_storage': marketing,
+            'ad_user_data': marketing,
+            'ad_personalization': marketing,
+            'analytics_storage': analytics,
+        });
+    }
+</script>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ $gtagId }}"></script>
+<script>
+    gtag('js', new Date());
+    gtag('config', '{{ $gtagId }}');
+</script>
+```
+
+This assumes `@cookiesConsentScripts` is placed above it, so `window.cookiesConsent` is defined.
+
+The banner only runs your `onAccepted` callbacks once Alpine.js starts, after the Google tag has sent its first hits. Reading the stored choice here ensures those hits use the right consent.
+
+#### 2. Grant consent
+
+In your middleware, register the `analytics` and `marketing` groups and update the consent in their `onAccepted` callbacks. They run as soon as the user accepts a group in the banner:
+
+```php
+use Elegantly\CookiesConsent\Facades\CookiesConsent;
+use Elegantly\CookiesConsent\CookieGroupDefinition;
+use Elegantly\CookiesConsent\CookieDefinition;
+use Carbon\CarbonInterval;
+
+CookiesConsent::register(new CookieGroupDefinition(
+    key: 'analytics',
+    name: __('cookies-consent::cookies.analytics.name'),
+    description: __('cookies-consent::cookies.analytics.description'),
+    items: [
+        new CookieDefinition(
+            name: '_ga',
+            lifetime: CarbonInterval::years(2),
+            description: __('cookies-consent::cookies._ga.description')
+        ),
+        new CookieDefinition(
+            name: '_ga_ID',
+            lifetime: CarbonInterval::years(2),
+            description: __('cookies-consent::cookies._ga_ID.description')
+        ),
+    ],
+    onAccepted: function () {
+        return <<<'JS'
+                gtag('consent', 'update', {
+                    'analytics_storage': 'granted',
+                });
+            JS;
+    },
+))->register(new CookieGroupDefinition(
+    key: 'marketing',
+    name: __('cookies-consent::cookies.marketing.name'),
+    description: __('cookies-consent::cookies.marketing.description'),
+    items: [
+        new CookieDefinition(
+            name: '_gcl_au',
+            lifetime: CarbonInterval::days(90),
+            description: 'Used by Google Ads to measure conversions.'
+        ),
+    ],
+    onAccepted: function () {
+        return <<<'JS'
+                gtag('consent', 'update', {
+                    'ad_storage': 'granted',
+                    'ad_user_data': 'granted',
+                    'ad_personalization': 'granted',
+                });
+            JS;
+    },
+));
+```
+
 ## References
 
 [Facebook Guide: General Data Protection Regulation](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr)
+
+[Google Guide: Set up consent mode on websites](https://developers.google.com/tag-platform/security/guides/consent)
 
 ## Testing
 

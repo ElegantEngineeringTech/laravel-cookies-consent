@@ -3,9 +3,14 @@ import { CookiesConsent } from "./CookiesConsent";
 declare global {
     interface Window {
         /**
-         * Expected by the `<x-cookies-consent::banner />` component.
+         * Defined by `@cookiesConsentScripts`.
          */
         CookiesConsent: typeof CookiesConsent;
+        /**
+         * Instance configured with the registered groups, created by `@cookiesConsentScripts`
+         * and used by the `<x-cookies-consent::banner />` component.
+         */
+        cookiesConsent: CookiesConsent;
     }
 }
 

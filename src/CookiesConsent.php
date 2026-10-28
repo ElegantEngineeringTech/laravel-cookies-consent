@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Js;
 
 class CookiesConsent
 {
@@ -102,7 +103,8 @@ class CookiesConsent
     }
 
     /**
-     * Inline script defining `window.CookiesConsent`, used by the banner.
+     * Inline script defining the `window.CookiesConsent` class and
+     * `window.cookiesConsent`, its instance configured with the registered groups.
      *
      * @param  ?string  $nonce  Defaults to the Vite CSP nonce
      */
@@ -110,11 +112,35 @@ class CookiesConsent
     {
         $nonce ??= Vite::cspNonce();
 
-        return new HtmlString(sprintf(
-            '<script%s>%s</script>',
-            $nonce ? ' nonce="'.e($nonce).'"' : '',
-            File::get(__DIR__.'/../dist/cookies-consent.js'),
-        ));
+        $attributes = $nonce ? ' nonce="'.e($nonce).'"' : '';
+        $class = File::get(__DIR__.'/../dist/cookies-consent.js');
+        $cookieName = Js::from($this->cookieName);
+        $lifetime = Js::from(config()->integer('cookies-consent.cookie.lifetime', 60 * 24 * 365));
+        $domain = Js::from(config('cookies-consent.cookie.domain'));
+        $defaultConsents = Js::from($this->getDefaultConsents());
+        $callbacks = $this->definition
+            ->filter(fn (CookieGroupDefinition $group) => $group->onAccepted !== null)
+            ->map(fn (CookieGroupDefinition $group) => sprintf(
+                "%s: function () {\n%s\n}",
+                Js::from($group->key),
+                value($group->onAccepted),
+            ))
+            ->join(",\n");
+
+        return new HtmlString(<<<HTML
+            <script{$attributes}>
+            {$class}
+            window.cookiesConsent = new window.CookiesConsent({
+                cookieName: {$cookieName},
+                lifetime: {$lifetime},
+                domain: {$domain},
+                defaultConsents: {$defaultConsents},
+                callbacks: {
+            {$callbacks}
+                },
+            });
+            </script>
+            HTML);
     }
 
     public function register(CookieGroupDefinition $group): static

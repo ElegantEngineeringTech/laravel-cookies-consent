@@ -5,8 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    {{-- Must run before Alpine starts, as the banner expects window.CookiesConsent --}}
-    {{ Vite::useHotFile('vendor/cookies-consent/cookies-consent.hot')->useBuildDirectory('vendor/cookies-consent')->withEntryPoints(['workbench/resources/css/demo.css', 'workbench/resources/js/demo.js']) }}
+    {{ Vite::useHotFile('vendor/cookies-consent/cookies-consent.hot')->useBuildDirectory('vendor/cookies-consent')->withEntryPoints('workbench/resources/css/demo.css') }}
+
+    @cookiesConsentScripts
 
     <script defer src="https://cdn.jsdelivr.net/npm/@ryangjchandler/alpine-tooltip@1.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tippy.js@6/dist/tippy.min.css" />

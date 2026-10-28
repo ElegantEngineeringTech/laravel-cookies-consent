@@ -2,11 +2,7 @@
 
 @props([
     'cookies' => CookiesConsent::getDefinition(),
-    'defaultConsents' => CookiesConsent::getDefaultConsents(),
     'policy' => config('cookies-consent.policy'),
-    'cookieName' => CookiesConsent::getCookieName(),
-    'cookieLifetime' => config('cookies-consent.cookie.lifetime') / (24 * 60),
-    'cookieDomain' => config('cookies-consent.cookie.domain'),
 ])
 
 <div wire:ignore
@@ -16,21 +12,11 @@
         show: false,
         consent: null,
         init() {
-            if (typeof window.CookiesConsent !== 'function') {
-                throw new Error('[cookies-consent] window.CookiesConsent is not defined, add @@cookiesConsentScripts to your head or import it in your Vite bundle.');
+            if (!window.cookiesConsent) {
+                throw new Error('[cookies-consent] window.cookiesConsent is not defined, add @@cookiesConsentScripts to your head.');
             }
-    
-            this.consent = new window.CookiesConsent({
-                cookieName: @js($cookieName),
-                lifetime: @js($cookieLifetime * 24 * 60),
-                domain: @js($cookieDomain),
-                defaultConsents: @js($defaultConsents),
-                callbacks: {
-                    {{-- Do not use @foreach of @if or it will break when used with Livewire --}}
-                    {!! $cookies->map(fn($group) => "'{$group->key}': function(){\n" . value($group->onAccepted) . "\n}")->join(",\n") !!}
-                },
-            });
-    
+
+            this.consent = window.cookiesConsent;
             this.show = this.consent.isPending();
     
             if (this.show === false) {
