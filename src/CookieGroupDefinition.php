@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Support\Collection;
 
 /**
- * @extends \Illuminate\Support\Collection<array-key, CookieDefinition>
+ * @extends Collection<array-key, CookieDefinition>
  */
 class CookieGroupDefinition extends Collection
 {
