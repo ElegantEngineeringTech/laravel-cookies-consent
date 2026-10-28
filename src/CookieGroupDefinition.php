@@ -26,6 +26,7 @@ class CookieGroupDefinition
         public ?Closure $onAccepted = null,
         Arrayable|iterable|null $items = null,
     ) {
+        $this->key = str_replace(['- .'], '_', $key);
         $this->items = new Collection($items);
     }
 }

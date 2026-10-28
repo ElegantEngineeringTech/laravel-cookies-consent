@@ -25,12 +25,28 @@
             }
         },
         getCookie() {
-            return Cookies.get(this.cookieName);
+            for (const cookie of document.cookie.split(';')) {
+                const separator = cookie.indexOf('=');
+
+                if (separator === -1) {
+                    continue;
+                }
+
+                try {
+                    const name = decodeURIComponent(cookie.slice(0, separator).trim());
+
+                    if (name === this.cookieName) {
+                        return decodeURIComponent(cookie.slice(separator + 1));
+                    }
+                } catch {}
+            }
         },
         getValue() {
             const cookie = this.getCookie();
             if (cookie) {
-                return JSON.parse(cookie);
+                try {
+                    return JSON.parse(cookie);
+                } catch {}
             }
             return null;
         },
@@ -54,13 +70,14 @@
             return defaultConsents;
         },
         setCookie() {
-            Cookies.set(
-                this.cookieName,
-                JSON.stringify({
-                    set_at: Date.now(),
-                    consents: this.consents,
-                }), { expires: this.cookieLifetime }
-            );
+            const expires = new Date(Date.now() + this.cookieLifetime * 24 * 60 * 60 * 1000);
+            const value = JSON.stringify({
+                set_at: Date.now(),
+                consents: this.consents,
+            });
+
+            document.cookie = encodeURIComponent(this.cookieName) + '=' + encodeURIComponent(value)
+                + '; expires=' + expires.toUTCString() + '; path=/';
         },
         runCallbacks() {
             for (const [key, value] of Object.entries(this.consents)) {

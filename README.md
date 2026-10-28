@@ -26,7 +26,6 @@ The default cookie consent banner included in this package requires:
 -   Blade components
 -   [Alpine.js](https://alpinejs.dev/)
 -   [Tailwind CSS](https://tailwindcss.com/)
--   [js-cookie](https://github.com/js-cookie/js-cookie)
 
 ## Installation
 
@@ -223,19 +222,7 @@ CookiesConsent::register(new CookieGroupDefinition(
 
 ### Using the Default Cookie Banner
 
-You can use the default cookie banner included with this package. It requires js-cookie, Alpine and tailwindcss.
-
-#### js-cookie Requirement
-
-The default banner implementation requires the [js-cookie](https://github.com/js-cookie/js-cookie) library to parse cookies in the browser.
-
-Add it to your project using the CDN:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@3/dist/js.cookie.min.js"></script>
-```
-
-Or see [their documentation](https://github.com/js-cookie/js-cookie) to install it via npm.
+You can use the default cookie banner included with this package. It requires Alpine.js and Tailwind CSS. Cookies are read and written using the browser's native `document.cookie` API.
 
 #### Alpine.js Requirement
 
@@ -366,6 +353,7 @@ CookiesConsent::register(new CookieGroupDefinition(
 
 ```bash
 composer test
+npm test
 ```
 
 ## Changelog
