@@ -5,21 +5,27 @@ declare(strict_types=1);
 namespace Elegantly\CookiesConsent;
 
 use Closure;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 
-/**
- * @extends Collection<array-key, CookieDefinition>
- */
-class CookieGroupDefinition extends Collection
+class CookieGroupDefinition
 {
+    /**
+     * @var Collection<array-key, CookieDefinition>
+     */
+    public Collection $items;
+
+    /**
+     * @param  Arrayable<array-key, CookieDefinition>|iterable<array-key, CookieDefinition>|null  $items
+     */
     public function __construct(
         public string $key,
         public string $name,
         public ?string $description = null,
         public bool $required = false,
         public ?Closure $onAccepted = null,
-        $items = null,
+        Arrayable|iterable|null $items = null,
     ) {
-        parent::__construct($items);
+        $this->items = new Collection($items);
     }
 }

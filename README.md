@@ -268,6 +268,8 @@ You can customize the default component by publishing the views:
 php artisan vendor:publish --tag="cookies-consent-views"
 ```
 
+If you previously published the banner, update cookie loops from `@foreach ($group as $cookie)` to `@foreach ($group->items as $cookie)`.
+
 ### Using a Custom Component
 
 You can design your own frontend cookie banner.

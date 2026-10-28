@@ -171,7 +171,7 @@
                         </button>
 
                         <div class="flex flex-col gap-1" x-show="expanded" x-collapse x-cloak>
-                            @foreach ($group as $cookie)
+                            @foreach ($group->items as $cookie)
                                 <div>
                                     <div class="flex gap-1">
                                         <p class="grow truncate">{{ $cookie->name }}</p>

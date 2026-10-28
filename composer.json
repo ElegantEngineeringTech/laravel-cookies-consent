@@ -49,7 +49,7 @@
         }
     },
     "scripts": {
-        "post-autoload-dump": [
+       "post-autoload-dump": [
             "@clear",
             "@prepare",
             "@composer run prepare"
@@ -62,8 +62,8 @@
             "@composer run build",
             "@php vendor/bin/testbench serve"
         ],
-        "analyse": "vendor/bin/phpstan analyse",
-        "test": "vendor/bin/pest",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit 500M",
+        "test": "vendor/bin/pest --no-coverage",
         "test-coverage": "vendor/bin/pest --coverage",
         "format": "vendor/bin/pint",
         "serve": [
@@ -72,8 +72,8 @@
             "@php vendor/bin/testbench serve --ansi"
         ],
         "lint": [
-            "@php vendor/bin/pint --ansi",
-            "@php vendor/bin/phpstan analyse --verbose --ansi"
+            "@php vendor/bin/pint",
+            "@php vendor/bin/phpstan analyse"
         ]
     },
     "config": {
