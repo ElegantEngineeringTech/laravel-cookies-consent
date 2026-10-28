@@ -15,7 +15,7 @@
             if (!window.cookiesConsent) {
                 throw new Error('[cookies-consent] window.cookiesConsent is not defined, add @@cookiesConsentScripts to your head.');
             }
-
+    
             this.consent = window.cookiesConsent;
             this.show = this.consent.isPending();
     
@@ -34,7 +34,6 @@
         save() {
             this.consent.save();
             this.show = false;
-            this.expanded = false;
         },
     }" x-show="show" x-cloak x-on:cookies-consent.window="show = true">
     <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md dark:bg-zinc-900 dark:text-white">

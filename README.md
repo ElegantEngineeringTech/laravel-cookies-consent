@@ -301,82 +301,6 @@ if (consent.isPending()) {
 
 The TypeScript source of the class lives in `vendor/elegantly/laravel-cookies-consent/resources/ts`, if you want to import it or its types.
 
-## Facebook Pixel Cookie Consent
-
-The Facebook Pixel tracks users and conversions on the client side. [Documentation available here](https://developers.facebook.com/docs/meta-pixel).
-
-This is the historic way to track conversions. Facebook & Meta now also provide a way to track your conversions directly from your backend. It is called "API conversions" and [the documentation is available here](https://developers.facebook.com/docs/marketing-api/conversions-api/).
-
-This example will only cover the Facebook Pixel as the "API conversions" do not need cookie consent.
-
-### Example
-
-The Pixel provides a built-in manager for consent. This example relies on this.
-
-#### 1. Revoke consent on load
-
-Before calling `fbq('init', ...)` and immediately after the Pixel script, **revoke** the consent:
-
-```html
-<!-- Facebook Pixel Code -->
-<!-- prettier-ignore -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-
-  // Revoke consent before init
-  fbq("consent", "revoke"); 
-  
-  // Then call your logic as usual
-  fbq('init', '{your-pixel-id-goes-here}');
-  fbq('track', 'PageView');
-</script>
-<!-- End Facebook Pixel Code -->
-```
-
-#### 2. Grant consent
-
-In your middleware, register a cookie group and call `fbq('consent', 'grant')` in the `onAccepted` callback.
-Every call to `fbq` done before the consent will be triggered after `fbq('consent', 'grant')` is called.
-
-```php
-use Elegantly\CookiesConsent\Facades\CookiesConsent;
-use Elegantly\CookiesConsent\CookieGroupDefinition;
-use Elegantly\CookiesConsent\CookieDefinition;
-use Carbon\CarbonInterval;
-
-CookiesConsent::register(new CookieGroupDefinition(
-    key: 'marketing', // customize this value if you want
-    name: __('cookies-consent::cookies.marketing.name'), // customize this value if you want
-    description: __('cookies-consent::cookies.marketing.description'), // customize this value if you want
-    items: [
-        new CookieDefinition(
-            name: '_fbc',
-            lifetime: CarbonInterval::years(2),
-            description: __('cookies-consent::cookies._fbc.description')
-        ),
-        new CookieDefinition(
-            name: '_fbp',
-            lifetime: CarbonInterval::years(3),
-            description: __('cookies-consent::cookies._fbp.description')
-        ),
-    ],
-    onAccepted: function () {
-        return <<<'JS'
-                if(typeof fbq === 'function'){
-                    fbq('consent', 'grant');
-                }
-            JS;
-    },
-));
-```
-
 ## Google Tag (gtag.js) Consent Mode
 
 The Google tag powers Google Analytics and Google Ads. Its [consent mode](https://developers.google.com/tag-platform/security/guides/consent) lets you deny storage by default and grant it once the user accepts.
@@ -478,11 +402,173 @@ CookiesConsent::register(new CookieGroupDefinition(
 ));
 ```
 
+## Meta Pixel (fbq) Consent
+
+The Meta Pixel measures conversions from your Facebook and Instagram ads. Its [consent API](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr) pauses the Pixel with `fbq('consent', 'revoke')` until you call `fbq('consent', 'grant')`.
+
+This guide covers the Pixel, which runs in the browser and sets cookies. Meta's [Conversions API](https://developers.facebook.com/docs/marketing-api/conversions-api/) sends events from your server instead.
+
+### Example
+
+This example maps the `marketing` group to the Pixel.
+
+#### 1. Revoke consent unless it was granted
+
+In your `<head>`, revoke consent before `fbq('init', ...)` unless the user has accepted the `marketing` group:
+
+```blade
+<!-- Meta Pixel Code -->
+<script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+
+    if (!window.cookiesConsent.hasConsent('marketing')) {
+        fbq('consent', 'revoke');
+    }
+
+    fbq('init', '{{ $pixelId }}');
+    fbq('track', 'PageView');
+</script>
+<!-- End Meta Pixel Code -->
+```
+
+This assumes `@cookiesConsentScripts` is placed above it, so `window.cookiesConsent` is defined.
+
+Leave out the `<noscript>` image from Meta's snippet: it sends a `PageView` without running any JavaScript, so without the user's consent.
+
+#### 2. Grant consent
+
+In your middleware, register the `marketing` group and grant consent in its `onAccepted` callback. It runs as soon as the user accepts the group in the banner:
+
+```php
+use Elegantly\CookiesConsent\Facades\CookiesConsent;
+use Elegantly\CookiesConsent\CookieGroupDefinition;
+use Elegantly\CookiesConsent\CookieDefinition;
+use Carbon\CarbonInterval;
+
+CookiesConsent::register(new CookieGroupDefinition(
+    key: 'marketing',
+    name: __('cookies-consent::cookies.marketing.name'),
+    description: __('cookies-consent::cookies.marketing.description'),
+    items: [
+        new CookieDefinition(
+            name: '_fbc',
+            lifetime: CarbonInterval::days(90),
+            description: __('cookies-consent::cookies._fbc.description')
+        ),
+        new CookieDefinition(
+            name: '_fbp',
+            lifetime: CarbonInterval::days(90),
+            description: __('cookies-consent::cookies._fbp.description')
+        ),
+    ],
+    onAccepted: function () {
+        return <<<'JS'
+                fbq('consent', 'grant');
+            JS;
+    },
+));
+```
+
+## TikTok Pixel (ttq) Consent
+
+The TikTok Pixel measures conversions from your TikTok ads. Its [consent mode](https://business-api.tiktok.com/portal/docs/pixel-cookie-consent-mode/v1.3) queues events after `ttq.holdConsent()`, and sends them, including the queued ones, once you call `ttq.grantConsent()`.
+
+### Example
+
+This example maps the `marketing` group to the Pixel.
+
+#### 1. Hold consent unless it was granted
+
+In your `<head>`, start from the Pixel base code given by TikTok Events Manager and make two changes:
+
+1. Add `"holdConsent"`, `"revokeConsent"` and `"grantConsent"` to the `ttq.methods` array, so these methods are queued until the Pixel loads.
+2. Hold consent before `ttq.load(...)` unless the user has accepted the `marketing` group.
+
+```blade
+<!-- TikTok Pixel Code -->
+<script>
+    !function (w, d, t) {
+        w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track", /* ... */ ,"holdConsent","revokeConsent","grantConsent"], /* ... the rest of the base code */
+
+        if (!window.cookiesConsent.hasConsent('marketing')) {
+            ttq.holdConsent();
+        }
+
+        ttq.load('{{ $pixelId }}');
+        ttq.page();
+    }(window, document, 'ttq');
+</script>
+<!-- End TikTok Pixel Code -->
+```
+
+This assumes `@cookiesConsentScripts` is placed above it, so `window.cookiesConsent` is defined.
+
+#### 2. Grant consent
+
+In your middleware, register the `marketing` group and grant consent in its `onAccepted` callback. The `PageView` queued before the user accepts is sent then:
+
+```php
+use Elegantly\CookiesConsent\Facades\CookiesConsent;
+use Elegantly\CookiesConsent\CookieGroupDefinition;
+use Elegantly\CookiesConsent\CookieDefinition;
+use Carbon\CarbonInterval;
+
+CookiesConsent::register(new CookieGroupDefinition(
+    key: 'marketing',
+    name: __('cookies-consent::cookies.marketing.name'),
+    description: __('cookies-consent::cookies.marketing.description'),
+    items: [
+        new CookieDefinition(
+            name: '_ttp',
+            lifetime: CarbonInterval::months(13),
+            description: 'Used by TikTok to identify the user.'
+        ),
+        new CookieDefinition(
+            name: 'ttclid',
+            lifetime: CarbonInterval::months(13),
+            description: 'Used by TikTok to identify the advertisement through which the user arrived on the site.'
+        ),
+    ],
+    onAccepted: function () {
+        return <<<'JS'
+                ttq.grantConsent();
+            JS;
+    },
+));
+```
+
+## Combining Several Tags
+
+Registering a group replaces any group with the same key. If you use several of these tags, register a single `marketing` group with the cookies of every tag, and grant consent to all of them in its callback:
+
+```php
+onAccepted: function () {
+    return <<<'JS'
+            gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted',
+            });
+            fbq('consent', 'grant');
+            ttq.grantConsent();
+        JS;
+},
+```
+
 ## References
 
-[Facebook Guide: General Data Protection Regulation](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr)
-
 [Google Guide: Set up consent mode on websites](https://developers.google.com/tag-platform/security/guides/consent)
+
+[Meta Guide: General Data Protection Regulation](https://developers.facebook.com/docs/meta-pixel/implementation/gdpr)
+
+[TikTok Guide: Pixel cookie consent mode](https://business-api.tiktok.com/portal/docs/pixel-cookie-consent-mode/v1.3)
 
 ## Testing
 
