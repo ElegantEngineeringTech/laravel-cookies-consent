@@ -7,6 +7,7 @@ namespace Elegantly\CookiesConsent\Facades;
 use Elegantly\CookiesConsent\CookieGroupDefinition;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\HtmlString;
 
 /**
  * @method static string getCookieName()
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static array<string, bool> getDefaultConsents()
  * @method static array<string, bool> getConsents()
  * @method static bool hasConsent(string $key)
+ * @method static HtmlString scripts(?string $nonce = null)
  *
  * @see \Elegantly\CookiesConsent\CookiesConsent
  */

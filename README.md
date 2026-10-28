@@ -26,6 +26,7 @@ The default cookie consent banner included in this package requires:
 -   Blade components
 -   [Alpine.js](https://alpinejs.dev/)
 -   [Tailwind CSS](https://tailwindcss.com/)
+-   [Vite](https://vite.dev/), only if you bundle the JavaScript class yourself
 
 ## Installation
 
@@ -236,6 +237,38 @@ Simply put the banner component `<x-cookies-consent::banner />` at the end of yo
 </body>
 ```
 
+#### JavaScript Requirement
+
+The banner relies on the `CookiesConsent` JavaScript class included in this package. It reads and writes the consent cookie and runs your `onAccepted` callbacks. It must be defined on `window` before Alpine.js starts, which you can do in one of two ways.
+
+##### Using the Blade directive
+
+Add `@cookiesConsentScripts` to your `<head>`. It inlines the compiled script (about 1 kB gzipped), so there is nothing to build or publish:
+
+```php
+<head>
+    <!-- ... -->
+    @cookiesConsentScripts
+</head>
+```
+
+If your application uses a Content Security Policy, the directive reuses the nonce set with `Vite::useCspNonce()`. You can also pass one yourself: `@cookiesConsentScripts(nonce: $nonce)`.
+
+##### Using your Vite bundle
+
+Alternatively, import the class in your own Vite bundle and expose it on `window`:
+
+```js
+// resources/js/app.js
+import { CookiesConsent } from "../../vendor/elegantly/laravel-cookies-consent/resources/ts";
+
+window.CookiesConsent = CookiesConsent;
+```
+
+If you import Alpine.js in your bundle, assign the class before calling `Alpine.start()`. If you load Alpine.js from a CDN, put your `@vite` directive before Alpine's `<script>` tag.
+
+The class is written in TypeScript, which Vite compiles out of the box. TypeScript users also get `window.CookiesConsent` typed by this import.
+
 #### Tailwindcss Requirement
 
 The default banner is based on `elegantly/blade-kit` which is styled with tailwindcss.
@@ -267,6 +300,27 @@ To retrieve all the cookie definitions, simply call:
 use Elegantly\CookiesConsent\Facades\CookiesConsent;
 
 CookiesConsent::getDefinition();
+```
+
+The `CookiesConsent` JavaScript class is not tied to the default banner, so it can power your own component:
+
+```js
+const consent = new CookiesConsent({
+    cookieName: "laravel_cookiesconsent", // config('cookies-consent.cookie.name')
+    lifetime: 60 * 24 * 365, // in minutes, config('cookies-consent.cookie.lifetime')
+    domain: null, // config('cookies-consent.cookie.domain')
+    defaultConsents: { essentials: true, analytics: false }, // CookiesConsent::getDefaultConsents()
+    callbacks: {
+        analytics: () => gtag("consent", "update", { analytics_storage: "granted" }),
+    },
+});
+
+if (consent.isPending()) {
+    // Display your banner, then call consent.acceptAll(), consent.acceptEssentials()
+    // or consent.set("analytics", true).save()
+} else {
+    consent.runCallbacks();
+}
 ```
 
 ## Facebook Pixel Cookie Consent

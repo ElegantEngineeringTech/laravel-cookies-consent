@@ -9,6 +9,9 @@ use Elegantly\CookiesConsent\Support\MemoizeProperties;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\HtmlString;
 
 class CookiesConsent
 {
@@ -96,6 +99,22 @@ class CookiesConsent
             $this->getConsents(),
             $key
         );
+    }
+
+    /**
+     * Inline script defining `window.CookiesConsent`, used by the banner.
+     *
+     * @param  ?string  $nonce  Defaults to the Vite CSP nonce
+     */
+    public function scripts(?string $nonce = null): HtmlString
+    {
+        $nonce ??= Vite::cspNonce();
+
+        return new HtmlString(sprintf(
+            '<script%s>%s</script>',
+            $nonce ? ' nonce="'.e($nonce).'"' : '',
+            File::get(__DIR__.'/../dist/cookies-consent.js'),
+        ));
     }
 
     public function register(CookieGroupDefinition $group): static

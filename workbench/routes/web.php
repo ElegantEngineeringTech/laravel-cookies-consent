@@ -52,11 +52,7 @@ Route::get('/', function () {
             ],
             onAccepted: function () {
                 return <<<'JS'
-                            if(typeof gtag === 'function'){
-                                gtag('consent', 'update', {
-                                    'analytics_storage': 'granted'
-                                });
-                            }
+                            console.log('analytics: gtag');
                         JS;
             },
         ))
@@ -83,19 +79,9 @@ Route::get('/', function () {
             ],
             onAccepted: function () {
                 return <<<'JS'
-                            if(typeof ttq === 'object'){
-                                ttq.grantConsent();
-                            }
-                            if(typeof fbq === 'function'){
-                                fbq('consent', 'grant');
-                            }
-                            if(typeof gtag === 'function'){
-                                gtag('consent', 'update', {
-                                    'ad_storage': 'granted',
-                                    'ad_user_data': 'granted',
-                                    'ad_personalization': 'granted',
-                                });
-                            }
+                            console.log('marketing: ttq');
+                            console.log('marketing: fbq');
+                            console.log('marketing: gtag');
                         JS;
             },
         ));

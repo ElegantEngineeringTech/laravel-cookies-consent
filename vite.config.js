@@ -18,7 +18,7 @@ export default defineConfig({
         laravel({
             hotFile: "public/vendor/cookies-consent/cookies-consent.hot",
             buildDirectory: "vendor/cookies-consent",
-            input: ["workbench/resources/css/demo.css"],
+            input: ["workbench/resources/css/demo.css", "workbench/resources/js/demo.js"],
             refresh: true,
         }),
     ],

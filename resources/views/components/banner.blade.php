@@ -6,6 +6,7 @@
     'policy' => config('cookies-consent.policy'),
     'cookieName' => CookiesConsent::getCookieName(),
     'cookieLifetime' => config('cookies-consent.cookie.lifetime') / (24 * 60),
+    'cookieDomain' => config('cookies-consent.cookie.domain'),
 ])
 
 <div wire:ignore
@@ -13,116 +14,41 @@
     x-data="{
         expanded: false,
         show: false,
-        cookieName: @js($cookieName),
-        cookieLifetime: @js($cookieLifetime),
-        consents: null,
+        consent: null,
         init() {
-            this.consents = this.getConsents();
-            this.show = this.shouldShow();
+            if (typeof window.CookiesConsent !== 'function') {
+                throw new Error('[cookies-consent] window.CookiesConsent is not defined, add @@cookiesConsentScripts to your head or import it in your Vite bundle.');
+            }
+    
+            this.consent = new window.CookiesConsent({
+                cookieName: @js($cookieName),
+                lifetime: @js($cookieLifetime * 24 * 60),
+                domain: @js($cookieDomain),
+                defaultConsents: @js($defaultConsents),
+                callbacks: {
+                    {{-- Do not use @foreach of @if or it will break when used with Livewire --}}
+                    {!! $cookies->map(fn($group) => "'{$group->key}': function(){\n" . value($group->onAccepted) . "\n}")->join(",\n") !!}
+                },
+            });
+    
+            this.show = this.consent.isPending();
     
             if (this.show === false) {
-                this.runCallbacks();
+                this.consent.runCallbacks();
             }
-        },
-        getCookie() {
-            for (const cookie of document.cookie.split(';')) {
-                const separator = cookie.indexOf('=');
-
-                if (separator === -1) {
-                    continue;
-                }
-
-                try {
-                    const name = decodeURIComponent(cookie.slice(0, separator).trim());
-
-                    if (name === this.cookieName) {
-                        return decodeURIComponent(cookie.slice(separator + 1));
-                    }
-                } catch {}
-            }
-        },
-        getValue() {
-            const cookie = this.getCookie();
-            if (cookie) {
-                try {
-                    return JSON.parse(cookie);
-                } catch {}
-            }
-            return null;
-        },
-        getDefaultConsents() {
-            return @js($defaultConsents);
-        },
-        getConsents() {
-            const value = this.getValue();
-            const defaultConsents = this.getDefaultConsents();
-    
-            if (value) {
-                const consents = {};
-    
-                for (const [key, defaultValue] of Object.entries(defaultConsents)) {
-                    consents[key] = defaultValue ? true : (value['consents'][key] ?? false);
-                }
-    
-                return consents;
-            }
-    
-            return defaultConsents;
-        },
-        setCookie() {
-            const expires = new Date(Date.now() + this.cookieLifetime * 24 * 60 * 60 * 1000);
-            const value = JSON.stringify({
-                set_at: Date.now(),
-                consents: this.consents,
-            });
-
-            document.cookie = encodeURIComponent(this.cookieName) + '=' + encodeURIComponent(value)
-                + '; expires=' + expires.toUTCString() + '; path=/';
-        },
-        runCallbacks() {
-            for (const [key, value] of Object.entries(this.consents)) {
-                if (value && Object.hasOwn(this.callbacks, key)) {
-                    this.callbacks[key]();
-                }
-            }
-        },
-        shouldShow() {
-            const cookie = this.getValue();
-    
-            if (!cookie) {
-                return true;
-            }
-    
-            const defaultKeys = Object.keys(this.getDefaultConsents());
-            const consents = cookie['consents'] ?? {};
-    
-            for (const key of defaultKeys) {
-                if (!Object.hasOwn(consents, key)) {
-                    return true;
-                }
-            }
-    
-            return false;
         },
         acceptAll() {
-            for (key in this.consents) {
-                this.consents[key] = true;
-            }
-            this.save();
-        },
-        acceptEssentials() {
-            this.consents = this.getDefaultConsents();
-    
-            this.save();
-        },
-        save() {
-            this.setCookie();
-            this.runCallbacks();
+            this.consent.acceptAll();
             this.show = false;
         },
-        callbacks: {
-            {{-- Do not use @foreach of @if or it will break when used with Livewire --}}
-            {!! $cookies->map(fn($group) => "'{$group->key}': function(){\n" . value($group->onAccepted) . "\n}")->join(",\n") !!}
+        acceptEssentials() {
+            this.consent.acceptEssentials();
+            this.show = false;
+        },
+        save() {
+            this.consent.save();
+            this.show = false;
+            this.expanded = false;
         },
     }" x-show="show" x-cloak x-on:cookies-consent.window="show = true">
     <div class="min-h-0 overflow-auto rounded-md bg-white shadow-md dark:bg-zinc-900 dark:text-white">
@@ -170,8 +96,8 @@
                                 {{ $group->name }}
                             </p>
 
-                            <x-kit::switch id="consents.{{ $group->key }}" x-model="consents.{{ $group->key }}"
-                                :disabled="$group->required" />
+                            <x-kit::switch id="consents.{{ $group->key }}"
+                                x-model="consent.consents.{{ $group->key }}" :disabled="$group->required" />
                         </div>
 
                         <p class="mb-1 text-black/50 dark:text-white/50">

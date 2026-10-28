@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Elegantly\CookiesConsent;
 
+use Illuminate\Support\Facades\Blade;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -21,6 +22,13 @@ class CookiesConsentServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasTranslations()
             ->hasViews();
+    }
+
+    public function packageBooted(): void
+    {
+        Blade::directive('cookiesConsentScripts', function (string $expression) {
+            return "<?php echo \\Elegantly\\CookiesConsent\\Facades\\CookiesConsent::scripts({$expression}); ?>";
+        });
     }
 
     public function registeringPackage(): void
