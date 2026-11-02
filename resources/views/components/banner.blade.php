@@ -41,7 +41,7 @@
             <h2 class="mb-1 text-lg font-bold">
                 {{ __('cookies-consent::cookies.title') }}
             </h2>
-            <p class="mb-3 text-sm dark:text-white/50">
+            <p class="mb-3 text-sm dark:text-white/50 [&_a]:underline">
                 {{ __('cookies-consent::cookies.intro') }}
                 @if ($policy)
                     <br>
@@ -59,7 +59,7 @@
                     {{ __('cookies-consent::cookies.accept_all') }}
                 </x-kit::button>
 
-                <x-kit::button color="white" x-show="!expanded"
+                <x-kit::button color="white" x-show="!expanded" x-bind:aria-expanded="expanded"
                     class="col-span-2 justify-center rounded-md font-semibold ring-1 ring-inset"
                     x-on:click="expanded = !expanded">
                     {{ __('cookies-consent::cookies.customize') }}
@@ -77,19 +77,19 @@
                 @foreach ($cookies as $group)
                     <div class="p-4" x-data="{ expanded: false }">
                         <div class="mb-0.5 flex items-center text-base">
-                            <p class="grow font-semibold">
+                            <label for="consents.{{ $group->key }}" class="grow font-semibold">
                                 {{ $group->name }}
-                            </p>
+                            </label>
 
                             <x-kit::switch id="consents.{{ $group->key }}"
                                 x-model="consent.consents.{{ $group->key }}" :disabled="$group->required" />
                         </div>
 
-                        <p class="mb-1 text-black/50 dark:text-white/50">
+                        <p class="mb-1 text-black/60 dark:text-white/50">
                             {{ $group->description }}
                         </p>
 
-                        <button type="button" x-on:click="expanded = !expanded">
+                        <button type="button" x-bind:aria-expanded="expanded" x-on:click="expanded = !expanded">
                             <span x-show="!expanded">
                                 {{ __('cookies-consent::cookies.details.more') }}
                             </span>
@@ -106,7 +106,7 @@
                                         <p>{{ $cookie->formattedLifetime() }}</p>
                                     </div>
 
-                                    <p class="text-xs text-black/50 dark:text-white/50">{{ $cookie->description }}</p>
+                                    <p class="text-xs text-black/60 dark:text-white/50">{{ $cookie->description }}</p>
                                 </div>
                             @endforeach
                         </div>

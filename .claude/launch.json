@@ -1,0 +1,18 @@
+{
+    "version": "0.0.1",
+    "configurations": [
+        {
+            "name": "serve",
+            "runtimeExecutable": "composer",
+            "runtimeArgs": ["serve"],
+            "env": { "SERVER_PORT": "8417" },
+            "port": 8417
+        },
+        {
+            "name": "vite",
+            "runtimeExecutable": "bun",
+            "runtimeArgs": ["run", "dev", "--port", "5417", "--strictPort"],
+            "port": 5417
+        }
+    ]
+}
